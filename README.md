@@ -5,7 +5,7 @@ using Flask and Leaflet and Google App Engine.
 
 see it in action: [Covid19](https://covid19-selfreport.appspot.com)
 
-geodata from [GoeoJSON Utilities](http://opendatalab.de/projects/geojson-utilities/)
+geodata from [GeoJSON Utilities](http://opendatalab.de/projects/geojson-utilities/)
 
 Clone repo:
 
