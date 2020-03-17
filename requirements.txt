@@ -1,0 +1,6 @@
+Flask==1.1.1
+flask_sqlalchemy
+flask_bootstrap
+flask_wtf
+firebase_admin
+itsdangerous

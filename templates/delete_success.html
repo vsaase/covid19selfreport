@@ -1,0 +1,14 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+  <div class="container">
+  <h3>{{ndel}} Einträge zu Ihrer Email-Adresse und dem eingebenen Passwort wurden gelöscht.</h3>
+  <p>
+    Sie können Ihre Daten neu eingeben indem Sie das Formular einfach erneut unter Verwendung der Emailadresse {{mail}} und eines Passworts abschicken.<br/>
+    Zum Löschen der Daten benutzten sie bitte <a href="/delete">dieses Formular</a>.<br/><br/>
+    Bei Fieber mit Atemnot und Kurzatmigkeit begeben Sie sich bitte sofort in ärztliche Behandlung.<br/>
+    <a href="/">Zurück zur Karte</a>
+  </p>
+
+</div>
+{% endblock %}
