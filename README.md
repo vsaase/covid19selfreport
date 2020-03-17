@@ -1,7 +1,7 @@
 Covid-19 Self reporting 
 =================
 
-using Flask and Leaflet and Google App Engine.
+Providing a dashboard for geographically self reporting symptomatic cases of Corona Virus Disease (Covid-19, nCov19, Coronavirus SARS-CoV-2), using Flask and Leaflet and Google App Engine.
 
 see it in action: [Covid19](https://covid19-selfreport.appspot.com)
 
