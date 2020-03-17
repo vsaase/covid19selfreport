@@ -31,4 +31,4 @@ View the demo by navigating to `http://localhost:5000`
 
 License
 -------
-MIT
+GNU General Public License v3.0
