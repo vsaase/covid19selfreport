@@ -36,7 +36,7 @@ function success(pos) {
 function error(err) {
   console.warn(`ERROR(${err.code}): ${err.message}`);
   //alert(err.message);
-  alert("Ihre Ortungsdienste sind für diese Webseite deaktiviert, bitte aktivieren Sie sie, sonst kann kein Bericht erstellt werden.")
+  alert("Ihre Ortungsdienste sind für diese Webseite deaktiviert, bitte aktivieren Sie sie, sonst kann kein Bericht erstellt werden. Fehler: "+ err.message)
   document.getElementById("geolocation").value = "error"
   window.location.href = "/";
 }
