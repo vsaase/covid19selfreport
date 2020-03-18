@@ -6,7 +6,7 @@ from firebase_admin import credentials, firestore
 
 from shapely.geometry import shape, Point
 from shapely.ops import unary_union
-from rki_cases_17032020 import cases
+from rki_cases_18032020 import cases
 
 cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
 firebase_admin.initialize_app(cred)
@@ -41,9 +41,10 @@ for name in laenderpolygons.keys():
         "source": "RKI",
         "latitude": point.y,
         "longitude": point.x,
-        "ncases": cases[name],
+        "ncases": cases[name][0],
+        "ndeath": cases[name][1],
         "name": name,
         "test": "Positiv",
-        "popup": f"<p>{cases[name]} positiv getestet in {name}<br/>RKI-Daten Stand 17.3.</p>"
+        "popup": f"<p>{cases[name][0]} positiv getestet in {name}<br/>{cases[name][1]} Todesfälle<br/>RKI-Daten Stand 18.3. 17:00</p>"
     })
 

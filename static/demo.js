@@ -102,7 +102,7 @@ function onLocationFound(e) {
     //L.marker(e.latlng).addTo(map)
     //    .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-    L.circle(e.latlng, radius).addTo(map);
+    // L.circle(e.latlng, radius).addTo(map);
 }
 
 
@@ -143,7 +143,7 @@ function renderData() {
 
 $(function() {
     makeMap();
-    map.locate({setView: true, maxZoom: 16});
+    map.locate({setView: true, maxZoom: 13});
 
     var legend = L.control({position: 'bottomright'});
 
