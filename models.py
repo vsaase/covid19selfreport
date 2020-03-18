@@ -35,7 +35,7 @@ class QuizForm(Form):
     notherssymptoms = IntegerField('Wieviele Menschen, mit denen Sie Kontakt hatten, haben ähnliche Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")])
 
     age = IntegerField('Wie alt sind Sie (Jahre)', widget=NumberInput(), validators=[NumberRange(min=0, max=120, message="Bitte Zahl mit Nummern eingeben")])
-    sex = SelectField("Welches biologische Geschlecht haben Sie",
+    sex = SelectField("Welches Geschlecht haben Sie",
     choices=[
             ('', ''), 
             ('female', 'weiblich'),
