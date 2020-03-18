@@ -41,6 +41,7 @@ for name in laenderpolygons.keys():
         "source": "RKI",
         "latitude": point.y,
         "longitude": point.x,
+        "ncases": cases[name],
         "test": "Positiv",
         "popup": f"<p>{cases[name]} positiv getestet in {name}<br/>RKI-Daten Stand 17.3.</p>"
     })

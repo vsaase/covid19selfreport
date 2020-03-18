@@ -123,7 +123,13 @@ function renderData() {
     });
     $.getJSON("/getsimulations", function(obj) {
         var markers = obj.coords.map(function(arr) {
-            var icon = redIcon
+			var icon = redIcon
+			if(arr["ncases"] == 0){
+				icon = blackIcon
+			}
+			if(arr["source"] == "RKI"){
+				icon = blueIcon
+			}
             let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
             marker.bindPopup(arr["popup"])
             return marker;

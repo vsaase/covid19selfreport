@@ -41,13 +41,13 @@ class QuizForm(Form):
             ('female', 'weiblich'),
             ('male', 'männlich'), 
      ] , validators=[InputRequired()])
-    email_addr = TextField('Ihre gültige Email-Adresse', validators=[InputRequired(message="Bitte geben Sie eine Emailadresse an"), Email(message="Bitte gültige Emailadresse eingeben")])
+    email_addr = TextField('Ihr Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
     password = PasswordField('Geben Sie ein Passwort ein, falls Sie Ihre Daten später ändern oder löschen wollen. Das Passwort wird auf dem Server nicht-wiederherstellbar verschlüsselt gespeichert.', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
     recaptcha = RecaptchaField()
     submit = SubmitField('Senden')
 
 class DeleteForm(Form):
-    email_addr = TextField('Email-Adresse', validators=[InputRequired(message="Bitte geben Sie eine Emailadresse an"), Email(message="Bitte gültige Emailadresse eingeben")])
+    email_addr = TextField('Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
     password = PasswordField('Passwort', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
     recaptcha = RecaptchaField()
     submit = SubmitField('Senden')

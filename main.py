@@ -175,6 +175,7 @@ def getsimulations():
         "latitude": report["latitude"], 
         "longitude": report["longitude"],
         "test": report["test"],
+        "ncases": report["ncases"],
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
@@ -183,6 +184,7 @@ def getsimulations():
         "latitude": report["latitude"], 
         "longitude": report["longitude"],
         "test": report["test"],
+        "ncases": report["ncases"],
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
