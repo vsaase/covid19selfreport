@@ -85,7 +85,7 @@ def landkreis(name):
         kreisreport["ncases"] = form.ncases.data
         kreisreport["source"] = form.source.data
         kreisreport["number"] += 1
-        kreisreport["popup"] = f'<p>{name}<br/>{form.ncases.data} Fälle<br/>Quelle: <a href="{form.source.data}">{form.source.data}<a/><br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen<a/><p/>'
+        kreisreport["popup"] = f'<p>{name}<br/>{form.ncases.data} Fälle<br/>Quelle: <a href="{form.source.data}">{form.source.data}<a/><br/><br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen<a/><p/>'
         kreisreport["timestamp"] = datetime.datetime.now()
         landkreise.document(name + str(kreisreport["number"])).set(kreisreport)
         old = deepcopy(kreisreporte[0])
