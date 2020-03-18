@@ -1,0 +1,28 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+  <div class="container">
+  <h3>Hier können Sie Daten für den Landkreis {{name}} eintragen</h3>
+<hr>
+{{ wtf.quick_form(form) }}
+<hr>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Fälle</th>
+            <th>Quelle</th>
+            <th>Zeitpunkt</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records %}
+        <tr>
+            <td>{{ record['ncases'] }}</td>
+            <td><a href="{{ record['source'] }}">{{ record['source'] }}</a></td>
+            <td>{{ record['timestamp'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

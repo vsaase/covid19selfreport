@@ -1,8 +1,9 @@
 from flask_wtf import Form, RecaptchaField
-from wtforms.widgets.html5 import NumberInput
+from wtforms.widgets.html5 import NumberInput, URLInput
+from wtforms.fields.html5 import URLField
 from wtforms import SubmitField, HiddenField, TextField, SelectField, SelectMultipleField, IntegerField, PasswordField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import Length, Email, InputRequired, NumberRange, Optional
+from wtforms.validators import Length, Email, InputRequired, NumberRange, Optional, URL
 
 # Form ORM
 class QuizForm(Form):
@@ -48,6 +49,14 @@ class QuizForm(Form):
 class DeleteForm(Form):
     email_addr = TextField('Email-Adresse', validators=[InputRequired(message="Bitte geben Sie eine Emailadresse an"), Email(message="Bitte gültige Emailadresse eingeben")])
     password = PasswordField('Passwort', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
+    recaptcha = RecaptchaField()
+    submit = SubmitField('Senden')
+    
+
+class LandkreisForm(Form):
+    name = HiddenField("name")
+    ncases = IntegerField('Wieviele Menschen wurden positiv getestet?', widget=NumberInput(), validators=[NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")])
+    source = URLField("Bitte geben Sie Ihre Quelle in Form einer Webseite an", validators=[InputRequired(), URL(message="Bitte geben Sie eine gültige Webadresse an")])
     recaptcha = RecaptchaField()
     submit = SubmitField('Senden')
     
