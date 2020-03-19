@@ -13,7 +13,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 rki_simulation = db.collection("RKI_Laender")
 
-f = open("bundeslaender_simplify200.geojson")
+f = open("static/bundeslaender_simplify200.geojson")
 data = json.load(f)
 f.close()
 
@@ -45,6 +45,6 @@ for name in laenderpolygons.keys():
         "ndeath": cases[name][1],
         "name": name,
         "test": "Positiv",
-        "popup": f"<p>{cases[name][0]} positiv getestet in {name}<br/>{cases[name][1]} Todesfälle<br/>RKI-Daten Stand 18.3. 17:00</p>"
+        "popup": f"<p>{cases[name][0]} positiv getestet in {name}<br/>{cases[name][1]} Todesfälle<br/>RKI-Daten Stand 19.3. 00:00</p>"
     })
 

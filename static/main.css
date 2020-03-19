@@ -12,3 +12,11 @@
     width: 10em;
     height: 10em;
 }
+
+.tooltip {
+    background-color: rgba(0,0,0,0);
+    color: #FFF;
+    border:0px;
+    display: none;
+}
+  

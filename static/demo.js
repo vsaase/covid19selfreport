@@ -93,6 +93,7 @@ function makeMap() {
     map.on('locationerror', onLocationError);
 	L.tileLayer(TILE_URL, {attribution: MB_ATTR}).addTo(map);
 	
+	/*
 	map.on('zoomend', function() {
 		var zoomlevel = map.getZoom();
 		if (zoomlevel < 9){
@@ -120,6 +121,7 @@ function makeMap() {
 		}
 		console.log("Current Zoom Level =" + zoomlevel)
 	});
+	*/
 }
 
 var reportlayer = L.layerGroup();
@@ -139,6 +141,47 @@ function onLocationFound(e) {
 
 function renderData() {
 	var zoomlevel = map.getZoom();
+
+	function onEachFeature(feature, layer) {
+		if(feature.properties.risklayer){
+			layer.bindTooltip(
+				String(feature.properties.risklayer.ncases),
+				{
+					className: 'tooltip',
+					permanent: true, 
+					direction:"center",
+					opacity: 0.8
+				}
+			).openTooltip()
+		}
+	}
+	$.getJSON("/static/landkreise_risklayer.geojson", function(data){
+		kreisareas =  L.geoJSON(data, {
+			onEachFeature: onEachFeature,
+			style: function (feature) {
+				let s = {
+					opacity: 1.0,
+					weight:1,
+					fillOpacity: 0.6,
+					color:"rgb(200,200,200)"
+				}
+				if(feature.properties.risklayer){
+					s.fillColor = feature.properties.risklayer.color;
+				}
+				return s;
+			}
+		}).bindPopup(function (layer) {
+			if(layer.feature.properties.risklayer){
+				return layer.feature.properties.risklayer.popup;
+			}else{
+				return "keine Daten"
+			}
+		})
+		//if(zoomlevel < 9){
+			map.addLayer(kreisareas);
+		//}
+	});
+
     $.getJSON("/getreports", function(obj) {
         var markers = obj.coords.map(function(arr) {
             var icon = greenIcon;
@@ -169,7 +212,8 @@ function renderData() {
         //map.removeLayer(layer);
         rki_layer = L.layerGroup(markers);
         map.addLayer(rki_layer);
-    });
+	});
+	/*
     $.getJSON("/getlaender", function(obj) {
         var markers = obj.coords.map(function(arr) {
 			var icon = redIcon
@@ -189,31 +233,8 @@ function renderData() {
 			map.addLayer(laender_layer);
 		}
 	});
-	$.getJSON("/static/landkreise_risklayer.geojson", function(data){
-		kreisareas =  L.geoJSON(data, {
-			style: function (feature) {
-				let s = {
-					opacity: 1.0,
-					weight:1,
-					fillOpacity: 0.6,
-					color:"rgb(200,200,200)"
-				}
-				if(feature.properties.risklayer){
-					s.fillColor = feature.properties.risklayer.color;
-				}
-				return s;
-			}
-		}).bindPopup(function (layer) {
-			if(layer.feature.properties.risklayer){
-				return layer.feature.properties.risklayer.popup;
-			}else{
-				return "keine Daten"
-			}
-		})
-		if(zoomlevel < 9){
-			map.addLayer(kreisareas);
-		}
-	});
+*/
+
 }
 
 
