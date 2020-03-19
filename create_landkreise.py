@@ -12,37 +12,29 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 landkreise = db.collection("Landkreise")
 
-f = open("landkreise_simplify200.geojson")
+f = open("static/landkreise_simplify200.geojson")
 data = json.load(f)
 f.close()
 
-
-lat_bounds = [47.27012360470944, 55.099168977100774]
-long_bounds = [5.866755374775609, 15.04181565646822]
-
 laenderpolygons = {}
-for feature in data["features"]:
-    name = feature["properties"]["GEN"]
+for i, feature in enumerate(data["features"]):
+    name = feature["properties"]["GEN"] + ' ' + feature["properties"]["BEZ"]
     polygon = shape(feature["geometry"])
     if name in laenderpolygons.keys():
-        laenderpolygons[name] = unary_union([polygon, laenderpolygons[name]])
+        laenderpolygons[name] = {
+            "polygon": unary_union([polygon, laenderpolygons[name]["polygon"]]), 
+            "geojson_idxs": [i] + laenderpolygons[name]["geojson_idxs"]
+        }
     else:
-        laenderpolygons[name] = polygon
+        laenderpolygons[name] = {"polygon": polygon, "geojson_idxs": [i]}
 
 for name in laenderpolygons.keys():
-    polygon = laenderpolygons[name]
+    polygon = laenderpolygons[name]["polygon"]
     point = polygon.centroid
     print(name)
     source = "keine Zahlen vorhanden"
     ncases = 0
     number = 0
-    # kreisreport = next(landkreise.where("name","==",name).order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1).get())
-    # if kreisreport.exists:
-    #     kreisreport = kreisreport.to_dict()
-    #     source = kreisreport["source"]
-    #     ncases = kreisreport["ncases"]
-    #     number = kreisreport["number"] + 1
-
     dct = {
         "number": number,
         "source": source,
@@ -53,7 +45,7 @@ for name in laenderpolygons.keys():
         "test": "Positiv",
         "overwritten": False,
         "timestamp": firestore.SERVER_TIMESTAMP,
-        "popup": f'<p>{name}<br/>{ncases} Fälle<br/>Quelle: {source}<br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen<a/><p/>'
+        "popup": f'<p>{name}<br/>{ncases} Fälle<br/>Quelle: {source}<br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen</a></p>'
     }
     print("setting " + name)
     landkreise.document(name + str(dct["number"])).set(dct)

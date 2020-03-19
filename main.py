@@ -85,7 +85,7 @@ def landkreis(name):
         kreisreport["ncases"] = form.ncases.data
         kreisreport["source"] = form.source.data
         kreisreport["number"] += 1
-        kreisreport["popup"] = f'<p>{name}<br/>{form.ncases.data} Fälle<br/>Quelle: <a href="{form.source.data}">{form.source.data}<a/><br/><br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen<a/><p/>'
+        kreisreport["popup"] = f'<p>{name}<br/>{form.ncases.data} Fälle<br/>Quelle: <a href="{form.source.data}">{form.source.data}</a><br/><br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen</a></p>'
         kreisreport["timestamp"] = datetime.datetime.now()
         landkreise.document(name + str(kreisreport["number"])).set(kreisreport)
         old = deepcopy(kreisreporte[0])
@@ -168,8 +168,8 @@ def getreports():
     } for report in reports]
     return jsonify({"coords": coords})
 
-@app.route('/getsimulations')
-def getsimulations():
+@app.route('/getrki')
+def getrki():
     reports = [doc.to_dict() for doc in rki_simulation.stream()]
     coords = [{
         "latitude": report["latitude"], 
@@ -179,8 +179,13 @@ def getsimulations():
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
+    return jsonify({"coords": coords})
+
+
+@app.route('/getlaender')
+def getlaender():
     reports = [doc.to_dict() for doc in landkreise.where("overwritten", '==', False).stream()]
-    coords2 = [{
+    coords = [{
         "latitude": report["latitude"], 
         "longitude": report["longitude"],
         "test": report["test"],
@@ -188,7 +193,7 @@ def getsimulations():
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
-    return jsonify({"coords": coords + coords2})
+    return jsonify({"coords": coords})
 
 
 if __name__ == '__main__':

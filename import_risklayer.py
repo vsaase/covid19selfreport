@@ -12,13 +12,13 @@ cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45a
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 landkreise = db.collection("Landkreise")
-risklayer = pd.read_csv("Risklayer Kreisebene Quellen - Studie 18032020 0330 - Haupt.csv", header=3) 
+risklayer = pd.read_csv("Risklayer Kreisebene Quellen - Studie 19032020 0330 - Haupt.csv", header=4) 
 
 for i, row in risklayer.iterrows(): 
-    name = row.loc["GEN"]
+    name = row.loc["GEN"] + ' ' + row.loc["BEZ"]
     print(name)
-    ncases = int(row.loc["Coronavirus Infektionen / Coronavirus Cases"])
-    source = row.loc["Main Source / Hauptquelle"]
+    ncases = int(row.loc["Coronavirus Fälle bis 19.03 00:00"])
+    source = row.loc["Quelle 1"]
     source_risklayer = "https://docs.google.com/spreadsheets/d/1wg-s4_Lz2Stil6spQEYFdZaBEp8nWW26gVyfHqvcl8s/htmlview#gid=0"
     kreisreportdocs = landkreise.where("name","==",name).order_by("timestamp", direction=firestore.Query.DESCENDING).limit(1).stream()
     kreisreporte = [doc.to_dict() for doc in kreisreportdocs]

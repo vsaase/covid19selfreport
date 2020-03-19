@@ -91,10 +91,41 @@ function makeMap() {
     map = L.map('map').setView(BASECOORDS, 6);
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
-    L.tileLayer(TILE_URL, {attribution: MB_ATTR}).addTo(map);
+	L.tileLayer(TILE_URL, {attribution: MB_ATTR}).addTo(map);
+	
+	map.on('zoomend', function() {
+		var zoomlevel = map.getZoom();
+		if (zoomlevel < 9){
+			if (map.hasLayer(laender_layer)) {
+				map.removeLayer(laender_layer);
+			} else {
+				console.log("no point layer active");
+			}
+			if (map.hasLayer(kreisareas)) {
+				console.log("layer already active");
+			} else {
+				map.addLayer(kreisareas);
+			}
+		}else{
+			if (map.hasLayer(laender_layer)){
+				console.log("layer already added");
+			} else {
+				map.addLayer(laender_layer);
+			}
+			if (map.hasLayer(kreisareas)) {
+				map.removeLayer(kreisareas);
+			} else {
+				console.log("no area layer active");
+			}
+		}
+		console.log("Current Zoom Level =" + zoomlevel)
+	});
 }
 
-var layer = L.layerGroup();
+var reportlayer = L.layerGroup();
+var rki_layer = L.layerGroup();
+var laender_layer = L.layerGroup();
+var kreisareas = L.layerGroup();
 
 function onLocationFound(e) {
     var radius = e.accuracy;
@@ -107,6 +138,7 @@ function onLocationFound(e) {
 
 
 function renderData() {
+	var zoomlevel = map.getZoom();
     $.getJSON("/getreports", function(obj) {
         var markers = obj.coords.map(function(arr) {
             var icon = greenIcon;
@@ -118,10 +150,10 @@ function renderData() {
             return marker;
         });
         //map.removeLayer(layer);
-        layer = L.layerGroup(markers);
-        map.addLayer(layer);
+        reportlayer = L.layerGroup(markers);
+        map.addLayer(reportlayer);
     });
-    $.getJSON("/getsimulations", function(obj) {
+    $.getJSON("/getrki", function(obj) {
         var markers = obj.coords.map(function(arr) {
 			var icon = redIcon
 			if(arr["ncases"] == 0){
@@ -135,9 +167,53 @@ function renderData() {
             return marker;
         });
         //map.removeLayer(layer);
-        layer = L.layerGroup(markers);
-        map.addLayer(layer);
+        rki_layer = L.layerGroup(markers);
+        map.addLayer(rki_layer);
     });
+    $.getJSON("/getlaender", function(obj) {
+        var markers = obj.coords.map(function(arr) {
+			var icon = redIcon
+			if(arr["ncases"] == 0){
+				icon = blackIcon
+			}
+			if(arr["source"] == "RKI"){
+				icon = blueIcon
+			}
+            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
+            marker.bindPopup(arr["popup"])
+            return marker;
+        });
+		//map.removeLayer(layer);
+        laender_layer = L.layerGroup(markers);
+		if(zoomlevel >= 8){
+			map.addLayer(laender_layer);
+		}
+	});
+	$.getJSON("/static/landkreise_risklayer.geojson", function(data){
+		kreisareas =  L.geoJSON(data, {
+			style: function (feature) {
+				let s = {
+					opacity: 1.0,
+					weight:1,
+					fillOpacity: 0.6,
+					color:"rgb(200,200,200)"
+				}
+				if(feature.properties.risklayer){
+					s.fillColor = feature.properties.risklayer.color;
+				}
+				return s;
+			}
+		}).bindPopup(function (layer) {
+			if(layer.feature.properties.risklayer){
+				return layer.feature.properties.risklayer.popup;
+			}else{
+				return "keine Daten"
+			}
+		})
+		if(zoomlevel < 9){
+			map.addLayer(kreisareas);
+		}
+	});
 }
 
 
