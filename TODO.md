@@ -1,6 +1,6 @@
 IDEEN:
-
 - Schneeball-System: Leute sollen aktiv Bekannte/Social Media Kontake nach Symptomen befragen und für weitere Befragungen gewinnen
+- ähnliche Ideen aus der Projektliste von WirVsVirus zusammensuchen und Synergien nutzen
 
 
 TODO:
