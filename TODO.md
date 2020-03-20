@@ -4,6 +4,7 @@ IDEEN:
 
 
 TODO:
+- Moderationssystem um Fake-Daten zu filtern
 - möglichkeit location einzutragen ohne geolocation aktiviert zu haben?
 - Report-Formular überdenken, welche Fragen sind medizinisch sinnvoll?
 - Die Fragen von https://covapp.charite.de/ einbauen und dann nach den Empfehlungen der Seite filtern (Arzt/Test empfohlen), 
