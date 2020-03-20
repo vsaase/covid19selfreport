@@ -18,4 +18,7 @@ TODO:
 - export der Daten vom RKI Dashboard (https://experience.arcgis.com/experience/478220a4c454480e823b17327b2bf1d4), API reverse engineering?
 - Internationalisierung
 - Möglichkeit Teilnehmer zu kontaktieren, zb mit anonymem Messaging System, viele hatten aber bisher bedenken ihre Email anzugeben wegen Datenschutz, das
-    darf keine Pflicht sein. Außerdem ist Email verschicken an viele Leute nicht trivial
+    darf keine Pflicht sein. Außerdem ist Email verschicken an viele Leute nicht trivial. Es wäre aber SEHR wichtig die Möglichkeit zu haben Leute nochmal zu befragen wie sich ihr Fall weiterentwickelt hat
+
+Wichtige Infos zum Verständnis:
+- [Artikel über die Notwendigkeit der aktuellen Maßnahmen und Ausblick auf Englisch](https://medium.com/@tomaspueyo/coronavirus-the-hammer-and-the-dance-be9337092b56)
