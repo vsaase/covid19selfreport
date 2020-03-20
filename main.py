@@ -54,6 +54,8 @@ def createreportdict(lat, lng, accuracy, form):
     dct["accuracy"] = accuracy
 
     dct["test"] = form.test.data
+    dct["arzt"] = form.arzt.data
+    dct["quarantine"] = form.quarantine.data
     dct["datetest"] = None if form.datetest.data is None else form.datetest.data.strftime("%d.%m.%Y")
     dct["notherstest"] = form.notherstest.data
     dct["symptoms"] = ', '.join(form.symptoms.data)

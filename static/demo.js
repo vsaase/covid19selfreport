@@ -162,7 +162,7 @@ function renderData() {
 				let s = {
 					opacity: 1.0,
 					weight:1,
-					fillOpacity: 0.6,
+					fillOpacity: 0.8,
 					color:"rgb(200,200,200)"
 				}
 				if(feature.properties.risklayer){

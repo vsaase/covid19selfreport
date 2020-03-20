@@ -15,8 +15,8 @@
 
 .tooltip {
     background-color: rgba(0,0,0,0);
-    color: #FFF;
+    color: rgb(53, 53, 53);
     border:0px;
     display: none;
+    box-shadow: 0;
 }
-  
