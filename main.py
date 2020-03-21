@@ -67,26 +67,31 @@ def createreportdict(form):
     dct["latitude_rand"] = dct["latitude"] + 0.01 * random.random()
     dct["longitude_rand"] = dct["longitude"] + 0.01 * random.random()
 
-    dct["test"] = form.test.data
-    dct["arzt"] = form.arzt.data
-    dct["quarantine"] = form.quarantine.data
-    dct["datetest"] = None if form.datetest.data is None else form.datetest.data.strftime("%d.%m.%Y")
-    dct["notherstest"] = form.notherstest.data
-    dct["symptoms"] = ', '.join(form.symptoms.data)
-    dct["dayssymptoms"] = form.dayssymptoms.data
-    dct["notherssymptoms"] = form.notherssymptoms.data
+    dct["username"] = form.username.data
+    s = Signer(form.password.data)
+    dct["signature"] = str(s.sign(form.username.data))
     dct["age"] = form.age.data
     dct["sex"] = form.sex.data
     dct["plz"] = form.plz.data
+
+    dct["travelhistory"] = form.travelhistory.data
+    dct["contacthistory"] = form.contacthistory.data
+    dct["notherstest"] = form.notherstest.data
+    dct["symptoms"] = "" if form.symptoms.data == "None" else ', '.join(form.symptoms.data)
+    dct["dayssymptoms"] = form.dayssymptoms.data
+    dct["arzt"] = form.arzt.data
+    dct["test"] = form.test.data
+    dct["datetest"] = None if form.datetest.data is None else form.datetest.data.strftime("%d.%m.%Y")
+    dct["quarantine"] = form.quarantine.data
+    dct["datequarantine"] = None if form.datetest.data is None else form.datequarantine.data.strftime("%d.%m.%Y")
+
+    #dct["notherssymptoms"] = form.notherssymptoms.data
     try:
         dct["kreis"] = plz2kreis[dct["plz"]]
     except:
         dct["kreis"] = ""
         print(f"error converting PLZ {dct['plz']} to Kreisebene")
 
-    dct["email_addr"] = form.email_addr.data
-    s = Signer(form.password.data)
-    dct["signature"] = str(s.sign(form.email_addr.data))
 
     dct["timestamp"] = firestore.SERVER_TIMESTAMP
     dct["email_confirmed"] = False
@@ -102,7 +107,7 @@ def landkreis(name):
 
 @app.route('/report', methods=['GET', 'POST'])
 def report():
-    form = QuizForm(request.form)
+    form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
     if not form.validate_on_submit():
         return render_template('report.html', form=form)
     if request.method == 'POST':
@@ -117,8 +122,7 @@ def report():
                 oldreport["overwritten"] = True
                 report_ref.document(oldreport["token"]).set(oldreport)
 
-        #return render_template('confirm_mail.html', mail=dct["email_addr"])
-        return render_template('success.html', mail=dct["email_addr"], risk="mittleres")
+        return render_template('success.html', mail=dct["username"], risk="mittleres")
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -128,7 +132,7 @@ def delete():
         return render_template('delete.html', form=form)
     if request.method == 'POST':
         s = Signer(form.password.data)
-        signature = str(s.sign(form.email_addr.data))
+        signature = str(s.sign(form.username.data))
         oldreports = report_ref.where("signature", '==', signature).stream()
         ndel = 0
         for oldreport in oldreports:
@@ -166,9 +170,9 @@ def getreports():
         "dayssymptoms": report["dayssymptoms"],
         "test": report["test"],
         "source": report["source"],
-        "nothers": report["notherssymptoms"],
+        #"nothers": report["notherssymptoms"],
         "date": report["timestamp"].strftime("%d.%m.%Y")
-    } for report in reports]
+    } for report in reports if report["symptoms"] != ""]
     return jsonify({"data": data})
 
 @app.route('/getrki')
