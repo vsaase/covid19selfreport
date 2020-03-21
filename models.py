@@ -15,43 +15,40 @@ def validate_plz(form, field):
 # Form ORM
 class QuizForm(Form):
     geolocation = HiddenField("geolocation", validators=[Optional()])
-    username = TextField('Ihr Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
-    password = PasswordField('Geben Sie ein Passwort ein, falls Sie Ihre Daten später ändern oder löschen wollen. Das Passwort wird auf dem Server nicht-wiederherstellbar verschlüsselt gespeichert.', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
+    username = TextField('Bitte geben Sie einen Benutzernamen ein:', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
+    password = PasswordField('Geben Sie ein Passwort ein, falls Sie Ihre Daten später ändern oder löschen wollen. Das Passwort wird nicht-wiederherstellbar verschlüsselt gespeichert.', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
     #email_addr = TextField('Ihr E-mail Addresse', validators=[InputRequired(message="Bitte geben Sie einen E-mail Addresse an")])
-    plz = TextField('Bitte geben Sie Ihre Postleitzahl an', widget=NumberInput(), validators=[InputRequired('Bitte geben Sie Ihre Postleitzahl an'), validate_plz])    
-    sex = SelectField("Welches Geschlecht haben Sie",
+    plz = TextField('Bitte geben Sie Ihre Postleitzahl an:', widget=NumberInput(), validators=[InputRequired('Bitte geben Sie Ihre Postleitzahl an'), validate_plz])    
+    sex = SelectField("Bitte geben Sie ihr Geschlecht an:",
         choices=[
-            ('', ''), 
+            ('none', 'keine Angabe'), 
             ('diverse', 'divers'),
             ('female', 'weiblich'),
             ('male', 'männlich'), 
         ] , validators=[InputRequired()])
-    age = IntegerField('Wie alt sind Sie (Jahre)', widget=NumberInput(), validators=[NumberRange(min=0, max=120, message="Bitte Zahl mit Nummern eingeben")])
-    travelhistory = SelectField('Sind Sie in den letzten 4 Wochen im Risikogebiet (Italien, Iran, China, Südkorea, Frankreich, Österreich, Spanien, USA) gewesen?',
+    age = IntegerField('Geben Sie bitte Ihr Alter ein:', widget=NumberInput(), validators=[NumberRange(min=0, max=120, message="Bitte geben Sie eine Zahl ein.")])
+    travelhistory = SelectField('Sind Sie in den letzten 4 Wochen in einem Risikogebiet (Italien, Iran, China, Südkorea, Frankreich, Österreich, Spanien, USA) gewesen?',
                   choices=[
                             ('Nein', 'Nein'), 
                             ('Ja', 'Ja')], 
         validators=[InputRequired()])
-    contacthistory = SelectField('Hatten Sie engen Kontakt zu einem bestätigten Fall? Enger Kontakt mit einem bestätigten Fall bedeutet: Kontakt von Angesicht zu Angesicht länger als 15 Minuten, direkter physischer Kontakt (Berührung, Händeschütteln, Küssen), Länger als 15 Minuten direkt neben einer infizierten Person (weniger als 2 Meter) verbracht, Kontakt mit oder Austausch von Körperflüssigkeiten, Teilen einer Wohnung?',
+    contacthistory = SelectField('Hatten Sie engen Kontakt zu einem bestätigten Fall? Z. B. Kontakt von Angesicht zu Angesicht länger als 15 Minuten, direkter physischer Kontakt (Berührung, Händeschütteln, Küssen), länger als 15 Minuten direkt neben einer infizierten Person (weniger als 2 Meter) verbracht, Kontakt mit oder Austausch von Körperflüssigkeiten, Teilen einer Wohnung?',
                   choices=[
                             ('Nein', 'Nein'), 
                             ('Ja', 'Ja')], 
         validators=[InputRequired()])
     notherstest = IntegerField('Wie viele Menschen, mit denen Sie Kontakt hatten, wurden positiv getestet?', widget=NumberInput(), validators=[NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")]) 
-    symptoms = SelectField('Wählen Sie aus, wenn sie unter folgenden Symptomen leiden (zum Markieren mehrerer Optionen am PC Strg-Taste (Ctrl) gedrückt halten):', 
-        choices=[
-            ('Fieber (38 C)', 'Fieber (38 C)'), 
-            ('Husten', 'Husten'),
-            ('Kurzatmigkeit', 'Kurzatmigkeit'),
-            ('Muskel-Gelekschmerzen', 'Muskel-Gelekschmerzen'), 
-            ('Halsschmerzen', 'Halsschmerzen'), 
-            ('Kopfschmerzen', 'Kopfschmerzen'),
-            ('Übelkeit/Erbrechen', 'Übelkeit/Erbrechen'),
-            ('Durchfall', 'Durchfall'),
-            ('verstopfte Nase', 'verstopfte Nase'),            
-        ], 
-        validators=[Optional()], render_kw={"size": "9"})
-    dayssymptoms = IntegerField('Falls zutreffend, seit wievielen Tagen haben Sie Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=None, message="Bitte Zahl mit Nummern eingeben")])
+
+    headache = IntegerField('Wie stark leiden Sie aktuell unter Kopfschmerzen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    cough = IntegerField('Wie stark leiden Sie aktuell unter Husten? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    shortnessbreath = IntegerField('Wie stark leiden Sie aktuell unter Kurzatmigkeit? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    musclepain = IntegerField('Wie stark leiden Sie aktuell unter Muskel-Gelekschmerzen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    throat = IntegerField('Wie stark leiden Sie aktuell unter Halsschmerzen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    nausea = IntegerField('Wie stark leiden Sie aktuell unter Übelkeit/Erbrechen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    diarrhea = IntegerField('Wie stark leiden Sie aktuell unter Durchfall? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    nose = IntegerField('Wie stark leiden Sie aktuell unter verstopfter Nase? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    
+    #dayssymptoms = IntegerField('Falls zutreffend, seit wievielen Tagen haben Sie Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=None, message="Bitte Zahl mit Nummern eingeben")])
     arzt = SelectField('Waren Sie bereits wegen den Symptomen bei einer Ärztin / einem Arzt?', 
         choices=[
             ('Nein', 'Nein'), 
