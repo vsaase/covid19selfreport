@@ -1,0 +1,18 @@
+cases = {
+    "Baden-Württemberg":(2155,6),
+    "Bayern":(1692,8),
+    "Berlin":(573,0),
+    "Brandenburg":(134,0),
+    "Bremen":(80,0),
+    "Hamburg":(432,0),
+    "Hessen":(682,0),
+    "Mecklenburg-Vorpommern":(98,0),
+    "Niedersachsen":(669,0),
+    "Nordrhein-Westfalen":(3003,6),
+    "Rheinland-Pfalz":(637,0),
+    "Saarland":(99,0),
+    "Sachsen":(275,0),
+    "Sachsen-Anhalt":(140,0),
+    "Schleswig-Holstein":(202,0),
+    "Thüringen":(98,0),
+}

@@ -50,7 +50,7 @@ for i, feature in enumerate(data["features"]):
         "overwritten": False,
         "timestamp": firestore.SERVER_TIMESTAMP,
         "popup": f'<p>{ncases} positiv getestet in {name}<br/>{number} Todesfälle<br/>'
-                 f'Letzter Abruf von <a href="{link_to_page}"> um {last_fetch.strftime("%d.%m.%Y %H:%M:%S")}"</p>',
+                 f'Letzter Abruf von <a href="{link_to_page}">{link_to_page}</a> um {last_fetch.strftime("%d.%m.%Y %H:%M:%S")}"</p>',
         "style:": style
     }
     print("setting " + name)
