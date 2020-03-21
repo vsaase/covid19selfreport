@@ -81,9 +81,6 @@ var blackIcon = new L.Icon({
 	shadowSize: [41, 41]
 });
 
-function onLocationError(e) {
-    //alert(e.message);
-}
 
 function add_title_layer() {
     var TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -98,37 +95,6 @@ function makeMap() {
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
     add_title_layer()
-
-	
-	/*
-	map.on('zoomend', function() {
-		var zoomlevel = map.getZoom();
-		if (zoomlevel < 9){
-			if (map.hasLayer(laender_layer)) {
-				map.removeLayer(laender_layer);
-			} else {
-				console.log("no point layer active");
-			}
-			if (map.hasLayer(kreisareas)) {
-				console.log("layer already active");
-			} else {
-				map.addLayer(kreisareas);
-			}
-		}else{
-			if (map.hasLayer(laender_layer)){
-				console.log("layer already added");
-			} else {
-				map.addLayer(laender_layer);
-			}
-			if (map.hasLayer(kreisareas)) {
-				map.removeLayer(kreisareas);
-			} else {
-				console.log("no area layer active");
-			}
-		}
-		console.log("Current Zoom Level =" + zoomlevel)
-	});
-	*/
 }
 
 var reportlayer = L.layerGroup();
@@ -206,9 +172,7 @@ function renderData() {
                         return popup
                     }
                     })
-                //if(zoomlevel < 9){
                 map.addLayer(county_areas);
-                //}
                 });
     }
     else if (display_option == 'Landkreise') {
@@ -224,9 +188,7 @@ function renderData() {
                     return popup
                 }
             });
-                //if(zoomlevel < 9){
             map.addLayer(kreisareas);
-            //}
             });
     }
 
@@ -241,7 +203,6 @@ function renderData() {
             marker.bindPopup('<p>'+arr["date"]+'<br/>' + arr["symptoms"] + '<br/>seit ' + arr["dayssymptoms"] + ' Tagen<br/>' + arr["nothers"] + ' Bekannte mit Symptomen<br/>Virustest: ' + arr["test"] + '</p>')
             return marker;
         });
-        //map.removeLayer(layer);
         reportlayer = L.layerGroup(markers);
         map.addLayer(reportlayer);
     });
@@ -262,32 +223,10 @@ function renderData() {
             return marker;
         });
 
-
-        //map.removeLayer(layer);
         rki_layer = L.layerGroup(markers);
         map.addLayer(rki_layer);
 
 	});
-
-//    $.getJSON("/getlaender", function(obj) {
-//        var markers = obj.data.map(function(arr) {
-//			var icon = redIcon
-//			if(arr["ncases"] == 0){
-//				icon = blackIcon
-//			}
-//			if(arr["source"] == "RKI"){
-//				icon = blueIcon
-//			}
-//            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-//            marker.bindPopup(arr["popup"])
-//            return marker;
-//        });
-//		//map.removeLayer(layer);
-//        laender_layer = L.layerGroup(markers);
-//		//if(zoomlevel >= 8){
-//		map.addLayer(laender_layer);
-		//}
-//	});
 
 
 }
