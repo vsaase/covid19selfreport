@@ -2,7 +2,7 @@ import sys
 import random
 from flask import Flask, render_template, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
-from config import Config
+from config_test import Config
 from flask import request, flash
 from flask_bootstrap import Bootstrap
 from models import QuizForm, DeleteForm, LandkreisForm
@@ -20,7 +20,8 @@ app.config.from_object(Config)
 
 Bootstrap(app)
 
-cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
+#cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
+cred = credentials.Certificate("covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 report_ref = db.collection("Report")
