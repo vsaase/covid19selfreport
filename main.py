@@ -4,7 +4,7 @@ from flask import Flask, render_template, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, flash
 from flask_bootstrap import Bootstrap
-from models import QuizForm, DeleteForm, LandkreisForm
+from models import QuizForm, DeleteForm
 import json
 from copy import deepcopy
 import firebase_admin
@@ -30,8 +30,7 @@ Bootstrap(app)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 report_ref = db.collection("Report")
-rki_simulation = db.collection("RKI_Laender")
-landkreise = db.collection("Landkreise")
+rki_ref = db.collection("RKI_Laender")
 
 BASECOORDS = [51.3150172,9.3205287]
 
@@ -85,23 +84,7 @@ def createreportdict(form):
 
 @app.route('/landkreis/<name>', methods=['GET', 'POST'])
 def landkreis(name):
-    form = LandkreisForm(request.form, name=name)
-    kreisreportdocs = landkreise.where("name","==",name).order_by("timestamp", direction=firestore.Query.DESCENDING).limit(20).stream()
-    kreisreporte = [doc.to_dict() for doc in kreisreportdocs]
-    if not form.validate_on_submit():
-        return render_template('landkreis.html', form=form, name=name, records=kreisreporte, colnames=["ncases", "source", "timestamp"])
-    if request.method == 'POST':
-        kreisreport = deepcopy(kreisreporte[0])
-        kreisreport["ncases"] = form.ncases.data
-        kreisreport["source"] = form.source.data
-        kreisreport["number"] += 1
-        kreisreport["popup"] = f'<p>{name}<br/>{form.ncases.data} Fälle<br/>Quelle: <a href="{form.source.data}">{form.source.data}</a><br/><br/><a href="/landkreis/{urllib.parse.quote(name)}">aktuelle Zahlen eintragen</a></p>'
-        kreisreport["timestamp"] = datetime.datetime.now()
-        landkreise.document(name + str(kreisreport["number"])).set(kreisreport)
-        old = deepcopy(kreisreporte[0])
-        old["overwritten"] = True
-        landkreise.document(old["name"] + str(old["number"])).set(old)
-        return redirect("/")
+    return render_template('landkreis.html',  name=name)
 
 @app.route('/report', methods=['GET', 'POST'])
 def report():
@@ -176,21 +159,7 @@ def getreports():
 
 @app.route('/getrki')
 def getrki():
-    reports = [doc.to_dict() for doc in rki_simulation.stream()]
-    coords = [{
-        "latitude": report["latitude"], 
-        "longitude": report["longitude"],
-        "test": report["test"],
-        "ncases": report["ncases"],
-        "source": report["source"],
-        "popup": report["popup"]
-    } for report in reports]
-    return jsonify({"coords": coords})
-
-
-@app.route('/getlaender')
-def getlaender():
-    reports = [doc.to_dict() for doc in landkreise.where("overwritten", '==', False).stream()]
+    reports = [doc.to_dict() for doc in rki_ref.stream()]
     coords = [{
         "latitude": report["latitude"], 
         "longitude": report["longitude"],

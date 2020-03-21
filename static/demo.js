@@ -97,22 +97,12 @@ function makeMap() {
 	map.on('zoomend', function() {
 		var zoomlevel = map.getZoom();
 		if (zoomlevel < 9){
-			if (map.hasLayer(laender_layer)) {
-				map.removeLayer(laender_layer);
-			} else {
-				console.log("no point layer active");
-			}
 			if (map.hasLayer(kreisareas)) {
 				console.log("layer already active");
 			} else {
 				map.addLayer(kreisareas);
 			}
 		}else{
-			if (map.hasLayer(laender_layer)){
-				console.log("layer already added");
-			} else {
-				map.addLayer(laender_layer);
-			}
 			if (map.hasLayer(kreisareas)) {
 				map.removeLayer(kreisareas);
 			} else {
@@ -126,7 +116,6 @@ function makeMap() {
 
 var reportlayer = L.layerGroup();
 var rki_layer = L.layerGroup();
-var laender_layer = L.layerGroup();
 var kreisareas = L.layerGroup();
 
 function onLocationFound(e) {
@@ -213,27 +202,6 @@ function renderData() {
         rki_layer = L.layerGroup(markers);
         map.addLayer(rki_layer);
 	});
-	/*
-    $.getJSON("/getlaender", function(obj) {
-        var markers = obj.coords.map(function(arr) {
-			var icon = redIcon
-			if(arr["ncases"] == 0){
-				icon = blackIcon
-			}
-			if(arr["source"] == "RKI"){
-				icon = blueIcon
-			}
-            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-            marker.bindPopup(arr["popup"])
-            return marker;
-        });
-		//map.removeLayer(layer);
-        laender_layer = L.layerGroup(markers);
-		if(zoomlevel >= 8){
-			map.addLayer(laender_layer);
-		}
-	});
-*/
 
 }
 

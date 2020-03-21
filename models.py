@@ -71,11 +71,3 @@ class DeleteForm(Form):
     recaptcha = RecaptchaField()
     submit = SubmitField('Senden')
     
-
-class LandkreisForm(Form):
-    name = HiddenField("name")
-    ncases = IntegerField('Wieviele Menschen wurden positiv getestet?', widget=NumberInput(), validators=[NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")])
-    source = URLField("Bitte geben Sie Ihre Quelle in Form einer Webseite an", validators=[InputRequired(), URL(message="Bitte geben Sie eine gültige Webadresse an")])
-    recaptcha = RecaptchaField()
-    submit = SubmitField('Senden')
-    
