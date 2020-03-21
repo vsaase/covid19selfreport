@@ -1,6 +1,6 @@
 import sys
 import random
-from flask import Flask, render_template, jsonify, redirect
+from flask import Flask, render_template, jsonify, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, flash
 from flask_bootstrap import Bootstrap
@@ -9,10 +9,12 @@ import json
 from copy import deepcopy
 import firebase_admin
 import urllib
-import datetime
+from datetime import datetime, timedelta
 from firebase_admin import credentials, firestore
 from itsdangerous import URLSafeTimedSerializer, Signer
 from plz.plz2kreis import plz2kreis, plz2longlat
+
+from util import covertFirebaseTimeToPythonTime
 
 testing_mode = True
 
@@ -36,9 +38,11 @@ landkreise_ref = db.collection("Landkreise")
 
 BASECOORDS = [51.3150172,9.3205287]
 
+
 def generate_confirmation_token(signature):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     return serializer.dumps(signature, salt=app.config['SECURITY_PASSWORD_SALT'])
+
 
 def confirm_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -51,6 +55,7 @@ def confirm_token(token, expiration=3600):
     except:
         return False
     return signature
+
 
 def createreportdict(form):
     dct = {}
@@ -132,7 +137,12 @@ def report():
                 oldreport["overwritten"] = True
                 report_ref.document(oldreport["token"]).set(oldreport)
 
-        return render_template('success.html', mail=dct["username"], risk="mittleres")
+        #return render_template('confirm_mail.html', mail=dct["email_addr"])
+
+        template = render_template('success.html', mail=dct["email_addr"], risk="mittleres")
+        response = make_response(template)
+        response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
+        return response
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -155,9 +165,38 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
-@app.route('/map')
+
+@app.route('/')
 def index():
-    return render_template('index.html')
+
+    # read Cookie
+    signature = request.cookies.get('signature')
+
+    # if not exist
+    date_time_obj = None
+    if not signature:
+        # create & forward to mandatory questionaire
+        return redirect(url_for('report'))
+    else:
+        oldreports = report_ref.where("signature", '==', signature).stream()
+        timestamp = None
+        for oldreport in oldreports:
+            oldreport = oldreport.to_dict()
+            if timestamp is None or \
+                    timestamp < oldreport["timestamp"]:
+                timestamp = oldreport["timestamp"]
+        date_time_obj = covertFirebaseTimeToPythonTime(timestamp)
+        now = datetime.utcnow()
+
+
+    # if Update needed?
+    time_diff = timedelta(seconds=15)
+    if date_time_obj + time_diff < now:
+        # foward to addiitional survey
+        return redirect(url_for('report'))
+    else:
+        # Show the user the map
+        return render_template('index.html')
 
 
 @app.route('/impressum')
@@ -184,6 +223,7 @@ def getreports():
         "date": report["timestamp"].strftime("%d.%m.%Y")
     } for report in reports if report["symptoms"] != ""]
     return jsonify({"data": data})
+
 
 @app.route('/getrki')
 def getrki():
