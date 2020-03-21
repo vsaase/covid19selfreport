@@ -69,7 +69,7 @@ class QuizForm(Form):
             validators=[InputRequired()] )
     datequarantine = DateField('Wenn ja, wann hat Ihre Quarantäne begonnen??', format='%Y-%m-%d', validators=[Optional()])
     #notherssymptoms = IntegerField('Wieviele Menschen, mit denen Sie Kontakt hatten, haben ähnliche Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")]) #commenting out a question that was earlier in the app, but does not appear in the google docs sheet.
-    recaptcha = RecaptchaField()
+    # recaptcha = RecaptchaField()
     submit = SubmitField('Senden')
     
 class DeleteForm(Form):

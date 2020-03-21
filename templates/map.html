@@ -1,0 +1,92 @@
+<html>
+<head>
+
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="{{url_for('static', filename='leaflet/leaflet.css')}}">
+
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+	<title>Covid-19 Selfreport</title>
+
+</head>
+<body>
+
+	{% if show_report %}
+
+		<div id="report-wrapper" class="active">
+
+			{% if mandatory_done %}
+
+				<div id="report-success-wrapper">
+
+					<div class="container">
+						<h3>Herzlichen Dank für Ihre Mithilfe!</h3>
+						<p>
+					    Sie können Ihre Daten ändern indem Sie das Formular einfach erneut unter Verwendung des Benutzernamens {{ username }} und des gleichen Passworts abschicken.<br/>
+					    Zum Löschen der Daten benutzten sie bitte <a href="/delete">dieses Formular</a>.<br/><br/>
+					    Bei Fieber mit Atemnot und Kurzatmigkeit begeben Sie sich bitte sofort in ärztliche Behandlung.<br/>
+					    Sie finden eine Entscheidungshilfe für einen Arztbesuch oder einen Coronavirus-Test der Charité <a href="https://covapp.charite.de/">hier</a>.
+					    <br/><br/>
+					    <a href="javascript:;" id="report-close-button">Zur Karte</a>
+					  </p>
+					</div>
+
+				</div>
+
+			{% else %}
+
+				<div id="report-mandatory-wrapper">
+					{% import "bootstrap/wtf.html" as wtf %}
+
+					<div class="container">
+						<h3>Willkommen bei Covid-19 Report.</h3>
+						<p>
+							Die aktuelle Coronavirus-Pandemie stellt uns alle vor große Herausforderungen und schränkt unser Leben in höchstem Maße ein.
+							Hier können Sie einen Beitrag leisten um der Politik und Wissenschaft wertvolle Hinweise zu der Verhältnismäßigkeit der Einschränkungen,
+							und vielleicht am wichtigsten, deren Erfolg bei der Senkung der Sterblichkeit an der Corona-Virus Erkrankung (Covid-19) zu ermitteln.
+							Bitte tragen füllen Sie dieses Formular, egal ob Sie nun gesund sind, sich krank fühlen oder vielleicht bereits positiv auf das Coronavirus getestet
+							wurden aus. <br/>
+							Danach erwartet Sie eine auch für Sie hilfreiche Auswertung der lokalen Zahlen in Ihrem Landkreis, ihrer Stadt oder sogar Postleitzahlengebiet.
+							Wir bitten Sie sogar darum das Formular mehrmals auszufüllen, jeweils unter Benutzung des gleichen Nutzernamens und Passworts. So können wir 
+							auch zeitliche Verläufe der Symptome besser nachvollziehen. Wenn Sie Daten für eine andere Person eingeben nutzen Sie bitte einen anderen Nutzernamens
+							damit wir verschiedene Fälle unterscheiden können.<br/><br/>
+							Vielen Dank für Ihre Mithilfe.<br/>
+							Herzlichen Dank <br/>
+							Das Covid-19 Report Team
+						</p>
+						<br/>
+						<p>
+							Disclaimer: Dies ist ein Forschungsprojekt der Universitätsmedizin Mannheim. Aktuell gibt es einen großen Mangel an Daten aus der Bevölkerung zu symptomatischen Patienten,
+							die noch nicht getestet wurden. Sie können hier einen Beitrag zur besseren Erforschung des Fortschreitens der Corona-Virus Pandemie leisten. 
+							Sollten Sie die Standortfreigabe aktiviert haben wird ihr Standort auf der Karte zufällig in einem 1km-Umkreis von dem echten Standort angegeben um ihre Privatsphäre zu schützen.
+							Sie können Ihre Daten jederzeit unter Angabe des Benutzernamens und des gewählten Passworts wieder löschen.
+						</p>
+						<hr>
+							{{ wtf.quick_form(form) }}
+						<hr>
+					</div>
+				</div>
+
+			{% endif %}
+
+		</div>
+
+	{% endif %}
+
+	<div id="map-wrapper">
+		<div id="map"></div>
+	</div>
+
+	<div style="display:none">
+		<script src="{{url_for('static', filename='jquery-2.2.2.min.js')}}"></script>
+	    <script src="{{url_for('static', filename='leaflet/leaflet.js')}}"></script>
+	    <script src="{{url_for('static', filename='report.js')}}"></script>
+	    <script src="{{url_for('static', filename='demo.js')}}"></script>
+	</div>
+</body>

@@ -1,4 +1,11 @@
+@charset "utf-8";
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden
+}
 
 #map {
     width: 100%;
@@ -19,4 +26,44 @@
     border:0px;
     display: none;
     box-shadow: 0;
+}
+
+.hidden {
+    display:none;
+}
+
+#map-wrapper {
+    position:fixed;
+    width:100%;
+    height:100%;
+    z-index:0;
+}
+
+/* report styles */
+
+#report-wrapper {
+    width:100%;
+    height:100%;
+    position:fixed;
+    background:rgba(255,255,255,0.6);
+    z-index:1;
+    opacity: 0.0;
+    transition:all 0.5s ease-out;
+}
+
+#report-wrapper .container {
+    background:#ffffff;
+    margin:40px auto;
+    padding:10px 30px;
+    overflow-y:scroll;
+    max-height:92%;
+    -webkit-border-radius:.3em;border-radius:.3em;
+    -webkit-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
+    -moz-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
+    box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
+}
+
+#report-wrapper.active {
+    opacity: 1.0;
+    transition:all 0.5s ease-out;
 }
