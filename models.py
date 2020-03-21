@@ -5,10 +5,11 @@ from wtforms import SubmitField, HiddenField, TextField, SelectField, SelectMult
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Length, Email, InputRequired, NumberRange, Optional, URL, ValidationError
 import re
+from plz.plz2kreis import plz_exists
 
 
 def validate_plz(form, field):
-    if not re.search(r"^[0-9]{5}$", field.data):
+    if not re.search(r"^[0-9]{5}$", field.data) or not plz_exists(field.data):
         raise ValidationError("Bitte geben Sie eine gültige Postleitzahl an")
     
 # Form ORM

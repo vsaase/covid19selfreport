@@ -18,7 +18,7 @@ f.close()
 
 laenderpolygons = {}
 for i, feature in enumerate(data["features"]):
-    name = feature["properties"]["GEN"] + ' ' + feature["properties"]["BEZ"]
+    name = feature["properties"]["BEZ"] + ' ' + feature["properties"]["GEN"]
     polygon = shape(feature["geometry"])
     if name in laenderpolygons.keys():
         laenderpolygons[name] = {
