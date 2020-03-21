@@ -45,13 +45,14 @@ def confirm_token(token, expiration=3600):
         return False
     return signature
 
-def createreportdict(lat, lng, accuracy, form):
+def createreportdict(form):
     dct = {}
-    dct["latitude"] = lat
-    dct["longitude"] = lng
-    dct["latitude_rand"] = lat + 0.01 * random.random()
-    dct["longitude_rand"] = lng + 0.01 * random.random()
-    dct["accuracy"] = accuracy
+    crd = json.loads(form.geolocation.data)
+    dct["latitude"] = crd["latitude"]
+    dct["longitude"] = crd["longitude"]
+    dct["latitude_rand"] = dct["latitude"] + 0.01 * random.random()
+    dct["longitude_rand"] = dct["longitude"] + 0.01 * random.random()
+    dct["accuracy"] = crd["accuracy"]
 
     dct["test"] = form.test.data
     dct["arzt"] = form.arzt.data
@@ -63,6 +64,7 @@ def createreportdict(lat, lng, accuracy, form):
     dct["notherssymptoms"] = form.notherssymptoms.data
     dct["age"] = form.age.data
     dct["sex"] = form.sex.data
+    dct["plz"] = form.plz.data
     dct["email_addr"] = form.email_addr.data
     s = Signer(form.password.data)
     dct["signature"] = str(s.sign(form.email_addr.data))
@@ -96,16 +98,12 @@ def landkreis(name):
         return redirect("/")
 
 @app.route('/report', methods=['GET', 'POST'])
-def take_test():
+def report():
     form = QuizForm(request.form)
     if not form.validate_on_submit():
         return render_template('report.html', form=form)
     if request.method == 'POST':
-        if form.geolocation.data is None or form.geolocation.data == "error":
-            flash("Ortinformation nicht gefunden, der Bericht wird nicht gespeichert")
-            return redirect("/")
-        crd = json.loads(form.geolocation.data)
-        dct = createreportdict(crd["latitude"], crd["longitude"], crd["accuracy"], form)
+        dct = createreportdict(form)
         
         report_ref.document(dct["token"]).set(dct)
 

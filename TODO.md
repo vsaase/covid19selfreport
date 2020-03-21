@@ -4,6 +4,7 @@ IDEEN:
 - Schneeball-System: Leute sollen aktiv Bekannte/Social Media Kontake nach Symptomen befragen und für weitere Befragungen gewinnen
 
 TODO:
+- Geolocation optional. use ZIP code!
 - Moderationssystem um Fake-Daten zu filtern
 - möglichkeit location einzutragen ohne geolocation aktiviert zu haben sinnvoll?
 - Report-Formular überdenken, welche Fragen sind medizinisch sinnvoll?

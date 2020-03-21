@@ -14,7 +14,7 @@
 <script>
   var options = {
   enableHighAccuracy: true,
-  timeout: 5000,
+  timeout: 3000,
   maximumAge: 0
 };
 
@@ -33,9 +33,10 @@ function success(pos) {
 function error(err) {
   console.warn(`ERROR(${err.code}): ${err.message}`);
   //alert(err.message);
-  alert("Ihre Ortungsdienste sind für diese Webseite deaktiviert, bitte aktivieren Sie sie, sonst kann kein Bericht erstellt werden. Fehler: "+ err.message)
-  document.getElementById("geolocation").value = "error"
-  window.location.href = "/";
+  //alert("Ihre Ortungsdienste sind für diese Webseite deaktiviert, bitte aktivieren Sie sie, sonst kann kein Bericht erstellt werden.")
+  //document.getElementById("geolocation").value = "error"
+  //window.location.href = "/";
+  document.getElementById("geolocation").value = JSON.stringify({"latitude": 0, "longitude": 0, "accuracy": 1})
 }
 
 navigator.geolocation.getCurrentPosition(success, error, options);

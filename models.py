@@ -3,8 +3,14 @@ from wtforms.widgets.html5 import NumberInput, URLInput
 from wtforms.fields.html5 import URLField
 from wtforms import SubmitField, HiddenField, TextField, SelectField, SelectMultipleField, IntegerField, PasswordField, BooleanField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import Length, Email, InputRequired, NumberRange, Optional, URL
+from wtforms.validators import Length, Email, InputRequired, NumberRange, Optional, URL, ValidationError
+import re
 
+
+def validate_plz(form, field):
+    if not re.search(r"^[0-9]{5}$", field.data):
+        raise ValidationError("Bitte geben Sie eine gültige Postleitzahl an")
+    
 # Form ORM
 class QuizForm(Form):
     geolocation = HiddenField("geolocation", validators=[Optional()])
@@ -51,10 +57,12 @@ class QuizForm(Form):
             ('female', 'weiblich'),
             ('male', 'männlich'), 
      ] , validators=[InputRequired()])
+    plz = TextField('Bitte geben Sie Ihre Postleitzahl an', widget=NumberInput(), validators=[InputRequired('Bitte geben Sie Ihre Postleitzahl an'), validate_plz])
     email_addr = TextField('Ihr Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
     password = PasswordField('Geben Sie ein Passwort ein, falls Sie Ihre Daten später ändern oder löschen wollen. Das Passwort wird auf dem Server nicht-wiederherstellbar verschlüsselt gespeichert.', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
     recaptcha = RecaptchaField()
     submit = SubmitField('Senden')
+
 
 class DeleteForm(Form):
     email_addr = TextField('Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
