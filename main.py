@@ -157,7 +157,7 @@ def info():
 @app.route('/getreports')
 def getreports():
     reports = [doc.to_dict() for doc in report_ref.where("overwritten", '==', False).stream()]
-    coords = [{
+    data = [{
         "latitude": report["latitude_rand"], 
         "longitude": report["longitude_rand"],
         "symptoms": report["symptoms"],
@@ -167,12 +167,12 @@ def getreports():
         "nothers": report["notherssymptoms"],
         "date": report["timestamp"].strftime("%d.%m.%Y")
     } for report in reports]
-    return jsonify({"coords": coords})
+    return jsonify({"data": data})
 
 @app.route('/getrki')
 def getrki():
     reports = [doc.to_dict() for doc in rki_simulation.stream()]
-    coords = [{
+    data = [{
         "latitude": report["latitude"], 
         "longitude": report["longitude"],
         "test": report["test"],
@@ -180,13 +180,13 @@ def getrki():
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
-    return jsonify({"coords": coords})
+    return jsonify({"data": data})
 
 
 @app.route('/getlaender')
 def getlaender():
     reports = [doc.to_dict() for doc in landkreise.where("overwritten", '==', False).stream()]
-    coords = [{
+    data = [{
         "latitude": report["latitude"], 
         "longitude": report["longitude"],
         "test": report["test"],
@@ -194,7 +194,7 @@ def getlaender():
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
-    return jsonify({"coords": coords})
+    return jsonify({"data": data})
 
 
 if __name__ == '__main__':

@@ -85,13 +85,20 @@ function onLocationError(e) {
     //alert(e.message);
 }
 
-function makeMap() {
+function add_title_layer() {
     var TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     var MB_ATTR = 'Ein Forschungsprojekt der Medizinischen Fakultät Mannheim der Universität Heidelberg. <a href="/info">Informationen zum Projekt und Spendenaufruf</a>, <a href="/impressum">Impressum</a>,  <a href="/delete">Daten löschen</a>, Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+    L.tileLayer(TILE_URL, {attribution: MB_ATTR}).addTo(map);
+}
+
+
+function makeMap() {
+
     map = L.map('map').setView(BASECOORDS, 6);
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
-	L.tileLayer(TILE_URL, {attribution: MB_ATTR}).addTo(map);
+    add_title_layer()
+
 	
 	/*
 	map.on('zoomend', function() {
@@ -139,8 +146,11 @@ function onLocationFound(e) {
 }
 
 
+
+
 function renderData() {
 	var zoomlevel = map.getZoom();
+	var display_option = document.querySelector('input[name="display_options"]:checked').value;
 
 	function onEachFeature(feature, layer) {
 		if(feature.properties.risklayer){
@@ -155,35 +165,74 @@ function renderData() {
 			).openTooltip()
 		}
 	}
-	$.getJSON("/static/landkreise_risklayer.geojson", function(data){
-		kreisareas =  L.geoJSON(data, {
-			onEachFeature: onEachFeature,
-			style: function (feature) {
-				let s = {
-					opacity: 1.0,
-					weight:1,
-					fillOpacity: 0.8,
-					color:"rgb(200,200,200)"
-				}
-				if(feature.properties.risklayer){
-					s.fillColor = feature.properties.risklayer.color;
-				}
-				return s;
-			}
-		}).bindPopup(function (layer) {
-			if(layer.feature.properties.risklayer){
-				return layer.feature.properties.risklayer.popup;
-			}else{
-				return "keine Daten"
-			}
-		})
-		//if(zoomlevel < 9){
-			map.addLayer(kreisareas);
-		//}
-	});
+    function get_risklayers(data) {
+        layers =  L.geoJSON(data, {
+            onEachFeature: onEachFeature,
+            style: function (feature) {
+                let s = {
+                    opacity: 1.0,
+                    weight:1,
+                    fillOpacity: 0.8,
+                    color:"rgb(200,200,200)"
+                }
+                if (display_option == 'Landkreise') {
+                    var cases = feature.properties.cases_per_population;
+                    var red_cases = 0.1;
+                } else {
+                    var cases = feature.properties.Fallzahl/feature.properties.LAN_ew_EWZ*100;
+                    var red_cases = 0.1;
+                }
+                var hue = 60-60*cases/red_cases;
+                if (hue < 0) hue = 0;
+                s.fillColor = 'hsl('+hue+',100%,50%)'
+
+                return s;
+            }
+        });
+        return layers
+    }
+
+    if (display_option == 'Bundesländer') {
+            $.getJSON("/static/bundeslaender_simplify200.geojson", function (data) {
+                county_areas = get_risklayers(data)
+                county_areas.bindPopup(function (layer) {
+                    if(layer.feature.properties.risklayer){
+                        return layer.feature.properties.risklayer.popup;
+                    }else{
+
+                        var popup = "<p>"+ layer.feature.properties.Fallzahl + "positiv getestet in "
+                        popup += layer.feature.properties.LAN_ew_GEN + "<br/>"+ layer.feature.properties.Death
+                        popup += " Todesfälle<br/>"
+                        return popup
+                    }
+                    })
+                //if(zoomlevel < 9){
+                map.addLayer(county_areas);
+                //}
+                });
+    }
+    else if (display_option == 'Landkreise') {
+        $.getJSON("/static/landkreise_simplify200.geojson", function (data) {
+            kreisareas = get_risklayers(data)
+            kreisareas.bindPopup(function (layer) {
+                if(layer.feature.properties.risklayer){
+                    return layer.feature.properties.risklayer.popup;
+                }else{
+                    var popup = "<p>" + layer.feature.properties.cases + " positiv getestet in "
+                    popup += layer.feature.properties.BEZ + " " + layer.feature.properties.GEN + "<br/>"+ layer.feature.properties.deaths
+                    popup += " Todesfälle<br/>"
+                    return popup
+                }
+            });
+                //if(zoomlevel < 9){
+            map.addLayer(kreisareas);
+            //}
+            });
+    }
+
 
     $.getJSON("/getreports", function(obj) {
-        var markers = obj.coords.map(function(arr) {
+        var markers = obj.data.map(function(arr) {
             var icon = greenIcon;
             if(arr["test"]=="Positiv"){
                 icon = orangeIcon;
@@ -197,7 +246,8 @@ function renderData() {
         map.addLayer(reportlayer);
     });
     $.getJSON("/getrki", function(obj) {
-        var markers = obj.coords.map(function(arr) {
+
+        var markers = obj.data.map(function(arr) {
 			var icon = redIcon
 			if(arr["ncases"] == 0){
 				icon = blackIcon
@@ -205,42 +255,76 @@ function renderData() {
 			if(arr["source"] == "RKI"){
 				icon = blueIcon
 			}
-            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
+            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon});
+            if (display_option == "Bundesländer") {
+            }
             marker.bindPopup(arr["popup"])
             return marker;
         });
+
+
         //map.removeLayer(layer);
         rki_layer = L.layerGroup(markers);
         map.addLayer(rki_layer);
+
 	});
-	/*
-    $.getJSON("/getlaender", function(obj) {
-        var markers = obj.coords.map(function(arr) {
-			var icon = redIcon
-			if(arr["ncases"] == 0){
-				icon = blackIcon
-			}
-			if(arr["source"] == "RKI"){
-				icon = blueIcon
-			}
-            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-            marker.bindPopup(arr["popup"])
-            return marker;
-        });
-		//map.removeLayer(layer);
-        laender_layer = L.layerGroup(markers);
-		if(zoomlevel >= 8){
-			map.addLayer(laender_layer);
-		}
-	});
-*/
+
+//    $.getJSON("/getlaender", function(obj) {
+//        var markers = obj.data.map(function(arr) {
+//			var icon = redIcon
+//			if(arr["ncases"] == 0){
+//				icon = blackIcon
+//			}
+//			if(arr["source"] == "RKI"){
+//				icon = blueIcon
+//			}
+//            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
+//            marker.bindPopup(arr["popup"])
+//            return marker;
+//        });
+//		//map.removeLayer(layer);
+//        laender_layer = L.layerGroup(markers);
+//		//if(zoomlevel >= 8){
+//		map.addLayer(laender_layer);
+		//}
+//	});
+
 
 }
 
+function onChange() {
+    map.eachLayer(function (layer) {
+        map.removeLayer(layer);
+    });
+    add_title_layer()
+    renderData()
+}
 
-$(function() {
+function init() {
     makeMap();
     map.locate({setView: true, maxZoom: 13});
+
+    var display_options = L.control({position: 'topright'});
+
+
+
+    display_options.onAdd = function (map) {
+        var div = L.DomUtil.create('div');
+        div.innerHTML = `
+            <div class="leaflet-control-layers leaflet-control-layers-expanded">
+                <form onchange="onChange()" id="display_options">
+                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise" checked>
+                    Landkreise</input><br>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
+                    Bundesländer</input><br>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen" disabled>
+                    Postleitzahlen</input>
+                </form>
+            </div>`;
+    return div;
+    };
+    display_options.addTo(map)
+
 
     var legend = L.control({position: 'bottomright'});
 
@@ -253,4 +337,6 @@ $(function() {
     legend.addTo(map);
 
     renderData();
-})
+}
+
+$(init())
