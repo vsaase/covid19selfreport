@@ -12,6 +12,7 @@ import urllib
 import datetime
 from firebase_admin import credentials, firestore
 from itsdangerous import URLSafeTimedSerializer, Signer
+from plz.plz2kreis import plz2kreis, plz2longlat
 
 testing_mode = True
 
@@ -52,12 +53,18 @@ def confirm_token(token, expiration=3600):
 
 def createreportdict(form):
     dct = {}
+
+    dct["plz"] = form.plz.data
+
     crd = json.loads(form.geolocation.data)
     dct["latitude"] = crd["latitude"]
     dct["longitude"] = crd["longitude"]
+    dct["accuracy"] = crd["accuracy"]
+    if dct["latitude"] == 0:
+        dct["longitude"], dct["latitude"] = plz2longlat(dct["plz"])
+        
     dct["latitude_rand"] = dct["latitude"] + 0.01 * random.random()
     dct["longitude_rand"] = dct["longitude"] + 0.01 * random.random()
-    dct["accuracy"] = crd["accuracy"]
 
     dct["test"] = form.test.data
     dct["arzt"] = form.arzt.data
@@ -70,6 +77,12 @@ def createreportdict(form):
     dct["age"] = form.age.data
     dct["sex"] = form.sex.data
     dct["plz"] = form.plz.data
+    try:
+        dct["kreis"] = plz2kreis[dct["plz"]]
+    except:
+        dct["kreis"] = ""
+        print(f"error converting PLZ {dct['plz']} to Kreisebene")
+
     dct["email_addr"] = form.email_addr.data
     s = Signer(form.password.data)
     dct["signature"] = str(s.sign(form.email_addr.data))

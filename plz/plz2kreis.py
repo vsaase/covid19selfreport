@@ -8,6 +8,11 @@ f = open("plz/plz2kreis.json")
 plz2kreis = json.load(f)
 f.close()
 
+def plz2longlat(plz):
+    df = pd.read_csv("plz/PLZ.tab", sep="\t", dtype=str, skiprows=0)
+    lon, lat = df.loc[df.plz == "55442",["lon","lat"]].iloc[0,:]
+    return float(lon), float(lat)
+
 def plz_exists(plz):
     return plz in plz2kreis.keys()
 
@@ -36,7 +41,7 @@ def f_plz5stellig2kreis():
         json.dump(plz2kreis, json_file)
 
 def f_tab2kreis():
-    df = pd.read_csv("PLZ.tab", sep="\t", dtype=str, skiprows=0)
+    df = pd.read_csv("plz/PLZ.tab", sep="\t", dtype=str, skiprows=0)
     f = open("static/landkreise_simplify200.geojson")
     kreisn = json.load(f)
     f.close()
