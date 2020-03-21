@@ -165,7 +165,7 @@ function renderData() {
                         return layer.feature.properties.risklayer.popup;
                     }else{
 
-                        var popup = "<p>"+ layer.feature.properties.Fallzahl + "positiv getestet in "
+                        var popup = "<p>"+ layer.feature.properties.Fallzahl + " positiv getestet in "
                         popup += layer.feature.properties.LAN_ew_GEN + "<br/>"+ layer.feature.properties.Death
                         popup += " Todesfälle<br/>"
                         return popup

@@ -1,17 +1,17 @@
 from datetime import datetime
-
+import json
 import firebase_admin
 import requests
 from firebase_admin import credentials, firestore
-from shapely.geometry import shape
+from shapely.geometry import shape, mapping
 
 # cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
 
-cred = credentials.Certificate("../covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
+cred = credentials.Certificate("covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
 
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-rki_simulation = db.collection("RKI_Laender")
+rki_ref = db.collection("RKI_Laender")
 
 url = 'https://opendata.arcgis.com/datasets/ef4b445a53c1406892257fe63129a8ea_0.geojson'
 link_to_page = 'https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/' \
@@ -19,7 +19,7 @@ link_to_page = 'https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/' \
 r = requests.get(url, allow_redirects=True)
 last_fetch = datetime.now()
 
-open('../static/bundeslaender_simplify200.geojson', 'wb').write(r.content)
+open('static/bundeslaender_simplify200.geojson', 'wb').write(r.content)
 data = r.json()
 
 lat_bounds = [47.27012360470944, 55.099168977100774]
@@ -29,16 +29,21 @@ for feature in data["features"]:
     name = feature["properties"]["LAN_ew_GEN"]
     if "Bodensee" in name:
         continue
-    polygon = shape(feature["geometry"])
+    try:
+        polygon = max(shape(feature["geometry"]), key=lambda a: a.area)
+    except:
+        polygon = shape(feature["geometry"])
+    feature["geometry"] = mapping(polygon.simplify(0.01))
     point = polygon.centroid
     print(name)
     ncases = feature["properties"]["Fallzahl"]
+    feature["properties"]["cases"] = ncases
     ndeath = feature["properties"]["Death"]
     red_cases = 3000
     hue = 60-60*ncases/red_cases if ncases < red_cases else 0
     color = f'hsl({hue},100%,50%)'
     style = "opacity:1;weight:1;fillOpacity:0.8;color:" + color
-    rki_simulation.document(name).set({
+    rki_ref.document(name).set({
         "source": "RKI",
         "latitude": point.y,
         "longitude": point.x,
@@ -51,3 +56,6 @@ for feature in data["features"]:
                  f'{last_fetch.strftime("%d.%m.%Y %H:%M:%S")}"</p>',
         "style:": style
     })
+
+with open('static/bundeslaender_simplify200.geojson', 'w') as json_file:
+  json.dump(data, json_file)
