@@ -4,3 +4,6 @@ flask_bootstrap
 flask_wtf
 firebase_admin
 itsdangerous
+geojson
+shapely
+pandas
