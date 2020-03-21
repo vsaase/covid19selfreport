@@ -4,7 +4,7 @@ import firebase_admin
 import random
 from firebase_admin import credentials, firestore
 import urllib
-from shapely.geometry import shape, Point, mapping
+from shapely.geometry import shape, Point, mapping, MultiPolygon
 from shapely.ops import unary_union
 import requests
 from datetime import datetime
@@ -29,7 +29,8 @@ data = r.json()
 for i, feature in enumerate(data["features"]):
     name = feature["properties"]["BEZ"] + ' ' + feature["properties"]["GEN"]
     try:
-        polygon = max(shape(feature["geometry"]), key=lambda a: a.area)
+        polygon = shape(feature["geometry"])
+        polygon = MultiPolygon(sorted(polygon, key = lambda a: -a.area ))
     except:
         polygon = shape(feature["geometry"])
     feature["geometry"] = mapping(polygon.simplify(0.002))

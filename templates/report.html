@@ -2,11 +2,24 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
   <div class="container">
-  <h3>Hier können Sie Ihre persönliche Erkrankung eintragen.</h3>
+  <h3>Willkommen bei Covid-19 Report.</h3>
+  <p>
+    Die aktuelle Coronavirus-Pandemie stellt uns alle vor große Herausforderungen und schränkt unser Leben in höchstem Maße ein.
+    Hier können Sie einen Beitrag leisten um der Politik und Wissenschaft wertvolle Hinweise zu der Verhältnismäßigkeit der Einschränkungen,
+    und vielleicht am wichtigsten, deren Erfolg bei der Senkung der Sterblichkeit an der Corona-Virus Erkrankung (Covid-19) zu ermitteln.
+    Bitte tragen füllen Sie dieses Formular, egal ob Sie nun gesund sind, sich krank fühlen oder vielleicht bereits positiv auf das Coronavirus getestet
+    wurden aus. <br/>
+    Danach erwartet Sie eine auch für Sie hilfreiche Auswertung der lokalen Zahlen in Ihrem Landkreis, ihrer Stadt oder sogar Postleitzahlengebiet.
+    Wir bitten Sie sogar darum das Formular mehrmals auszufüllen, jeweils unter Benutzung der gleichen Nutzernamens und Passworts. So können wir 
+    auch zeitliche Verläufe der Symptome besser nachvollziehen. <br/><br/>
+    Vielen Dank für Ihre Mithilfe.<br/>
+    Herzlichen Dank <br/>
+    Das Covid-19 Report Team
+  </p>
+  <br/>
   <p>Disclaimer: Dies ist ein Forschungsprojekt der Universitätsmedizin Mannheim. Aktuell gibt es einen großen Mangel an Daten aus der Bevölkerung zu symptomatischen Patienten,
-    die noch nicht getestet wurden. Sie können hier einen Beitrag zur besseren Erforschung des Fortschreitens der Corona-Virus Pandemie leisten. Bitte erlauben Sie die Ermittlung Ihres Ortes. Falls Sie die Frage danach eben abgelehnt habe laden Sie die Seite bitte neu und akzeptieren Sie die Übermittlung der Ortsinformation.
-    Ihr Standort wird auf der Karte zufällig in einem 1km-Umkreis von dem echten Standort angegeben um ihre Privatsphäre zu schützen.
-    Der genaue Standort wird nur Behörden oder zu Forschungszwecken unter Geheimhaltungsklausel weitergegeben.
+    die noch nicht getestet wurden. Sie können hier einen Beitrag zur besseren Erforschung des Fortschreitens der Corona-Virus Pandemie leisten. 
+    Sollten Sie die Standortfreigabe aktiviert haben wird ihr Standort auf der Karte zufällig in einem 1km-Umkreis von dem echten Standort angegeben um ihre Privatsphäre zu schützen.
     Sie können Ihre Daten jederzeit unter Angabe des Benutzernamens und des gewählten Passworts wieder löschen.</p>
 <hr>
 {{ wtf.quick_form(form) }}
