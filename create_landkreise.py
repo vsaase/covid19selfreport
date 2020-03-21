@@ -58,7 +58,7 @@ for i, feature in enumerate(data["features"]):
         "style:": style
     }
     print("setting " + name)
-    landkreise.document(name + str(dct["number"])).set(dct)
+    #landkreise.document(name + str(dct["number"])).set(dct)
 
 
 with open('static/landkreise_simplify200.geojson', 'w') as json_file:

@@ -161,15 +161,10 @@ function renderData() {
             $.getJSON("/static/bundeslaender_simplify200.geojson", function (data) {
                 county_areas = get_risklayers(data)
                 county_areas.bindPopup(function (layer) {
-                    if(layer.feature.properties.risklayer){
-                        return layer.feature.properties.risklayer.popup;
-                    }else{
-
                         var popup = "<p>"+ layer.feature.properties.Fallzahl + " positiv getestet in "
                         popup += layer.feature.properties.LAN_ew_GEN + "<br/>"+ layer.feature.properties.Death
                         popup += " Todesfälle<br/>"
                         return popup
-                    }
                     })
                 map.addLayer(county_areas);
                 });
@@ -178,14 +173,10 @@ function renderData() {
         $.getJSON("/static/landkreise_simplify200.geojson", function (data) {
             kreisareas = get_risklayers(data)
             kreisareas.bindPopup(function (layer) {
-                if(layer.feature.properties.risklayer){
-                    return layer.feature.properties.risklayer.popup;
-                }else{
-                    var popup = "<p>" + layer.feature.properties.cases + " positiv getestet in "
-                    popup += layer.feature.properties.BEZ + " " + layer.feature.properties.GEN + "<br/>"+ layer.feature.properties.deaths
-                    popup += " Todesfälle<br/>"
-                    return popup
-                }
+				var popup = "<p>" + layer.feature.properties.cases + " positiv getestet in "
+				popup += layer.feature.properties.BEZ + " " + layer.feature.properties.GEN + "<br/>"+ layer.feature.properties.deaths
+				popup += " Todesfälle<br/>"
+				return popup
             });
             map.addLayer(kreisareas);
             });
@@ -204,7 +195,9 @@ function renderData() {
         });
         reportlayer = L.layerGroup(markers);
         map.addLayer(reportlayer);
-    });
+	});
+	
+	/*
     $.getJSON("/getrki", function(obj) {
 
         var markers = obj.data.map(function(arr) {
@@ -226,7 +219,7 @@ function renderData() {
         map.addLayer(rki_layer);
 
 	});
-
+	*/
 }
 
 function onChange() {

@@ -43,19 +43,19 @@ for feature in data["features"]:
     hue = 60-60*ncases/red_cases if ncases < red_cases else 0
     color = f'hsl({hue},100%,50%)'
     style = "opacity:1;weight:1;fillOpacity:0.8;color:" + color
-    rki_ref.document(name).set({
-        "source": "RKI",
-        "latitude": point.y,
-        "longitude": point.x,
-        "ncases": ncases,
-        "ndeath": ndeath,
-        "name": name,
-        "test": "Positiv",
-        "popup": f'<p>{ncases} positiv getestet in {name}<br/>{ndeath} Todesfälle<br/>'
-                 f'Letzter Abruf von <a href="{link_to_page}">{link_to_page}</a> um '
-                 f'{last_fetch.strftime("%d.%m.%Y %H:%M:%S")}"</p>',
-        "style:": style
-    })
+    # rki_ref.document(name).set({
+    #     "source": "RKI",
+    #     "latitude": point.y,
+    #     "longitude": point.x,
+    #     "ncases": ncases,
+    #     "ndeath": ndeath,
+    #     "name": name,
+    #     "test": "Positiv",
+    #     "popup": f'<p>{ncases} positiv getestet in {name}<br/>{ndeath} Todesfälle<br/>'
+    #              f'Letzter Abruf von <a href="{link_to_page}">{link_to_page}</a> um '
+    #              f'{last_fetch.strftime("%d.%m.%Y %H:%M:%S")}"</p>',
+    #     "style:": style
+    # })
 
 with open('static/bundeslaender_simplify200.geojson', 'w') as json_file:
   json.dump(data, json_file)
