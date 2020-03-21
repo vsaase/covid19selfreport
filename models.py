@@ -27,7 +27,7 @@ class QuizForm(Form):
             ('Kopfschmerzen', 'Kopfschmerzen'), 
             ('Kurzatmigkeit', 'Kurzatmigkeit'),
         ], 
-        validators=[InputRequired()], render_kw={"size": "10"})
+        validators=[Optional()], render_kw={"size": "10"})
 
     dayssymptoms = IntegerField('Seit wievielen Tagen haben Sie Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=None, message="Bitte Zahl mit Nummern eingeben")])
     notherssymptoms = IntegerField('Wieviele Menschen, mit denen Sie Kontakt hatten, haben ähnliche Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")])
