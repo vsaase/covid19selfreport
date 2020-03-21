@@ -143,10 +143,13 @@ function renderData() {
                 if (display_option == 'Landkreise') {
                     var cases = feature.properties.cases_per_population;
                     var red_cases = 0.1;
-                } else {
+                } else if (display_option == 'Bundesländer'){
                     var cases = feature.properties.Fallzahl/feature.properties.LAN_ew_EWZ*100;
                     var red_cases = 0.1;
-                }
+                } else {
+                    var cases = feature.properties.einwohner;
+                    var red_cases = 50000;
+				}
                 var hue = 60-60*cases/red_cases;
                 if (hue < 0) hue = 0;
                 s.fillColor = 'hsl('+hue+',100%,50%)'
@@ -167,7 +170,7 @@ function renderData() {
                         return popup
                     })
                 map.addLayer(county_areas);
-                });
+			});
     }
     else if (display_option == 'Landkreise') {
         $.getJSON("/static/landkreise_simplify200.geojson", function (data) {
@@ -179,7 +182,18 @@ function renderData() {
 				return popup
             });
             map.addLayer(kreisareas);
+		});
+    }
+    else if (display_option == 'Postleitzahlen') {
+        $.getJSON("/static/plz.geojson", function (data) {
+            plzareas = get_risklayers(data)
+            plzareas.bindPopup(function (layer) {
+				var popup = "<p>" + layer.feature.properties.einwohner + " Einwohner in "
+				popup += layer.feature.properties.plz + " in " + layer.feature.properties.Kreis
+				return popup
             });
+            map.addLayer(plzareas);
+		});
     }
 
 
@@ -247,7 +261,7 @@ function init() {
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
-                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen" disabled>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
                     Postleitzahlen</input>
                 </form>
             </div>`;

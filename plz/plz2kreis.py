@@ -8,6 +8,10 @@ f = open("plz/plz2kreis.json")
 plz2kreis = json.load(f)
 f.close()
 
+f = open("plz/plz5stellig2kreis.json")
+plz5stellig2kreis = json.load(f)
+f.close()
+
 def plz2longlat(plz):
     df = pd.read_csv("plz/PLZ.tab", sep="\t", dtype=str, skiprows=0)
     lon, lat = df.loc[df.plz == "55442",["lon","lat"]].iloc[0,:]
