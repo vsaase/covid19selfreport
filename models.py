@@ -32,7 +32,7 @@ class QuizForm(Form):
                             ('Nein', 'Nein'), 
                             ('Ja', 'Ja')], 
         validators=[InputRequired()])
-    contacthistory = SelectField('Hatten Sie engen Kontakt zu einem bestätigten Fall?Enger Kontakt mit einem bestätigten Fall bedeutet:Kontakt von Angesicht zu Angesicht länger als 15 Minuten, Direkter, physischer Kontakt (Berührung, Händeschütteln, Küssen), Länger als 15 Minuten direkt neben einer infizierten Person (weniger als 2 Meter) verbracht Kontakt mit oder Austausch von Körperflüssigkeiten, Teilen einer Wohnung?',
+    contacthistory = SelectField('Hatten Sie engen Kontakt zu einem bestätigten Fall? Enger Kontakt mit einem bestätigten Fall bedeutet: Kontakt von Angesicht zu Angesicht länger als 15 Minuten, direkter physischer Kontakt (Berührung, Händeschütteln, Küssen), Länger als 15 Minuten direkt neben einer infizierten Person (weniger als 2 Meter) verbracht, Kontakt mit oder Austausch von Körperflüssigkeiten, Teilen einer Wohnung?',
                   choices=[
                             ('Nein', 'Nein'), 
                             ('Ja', 'Ja')], 
