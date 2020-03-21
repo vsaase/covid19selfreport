@@ -15,23 +15,42 @@ def validate_plz(form, field):
 # Form ORM
 class QuizForm(Form):
     geolocation = HiddenField("geolocation", validators=[Optional()])
-    symptoms = SelectMultipleField('Markieren Sie die Symptome, die sie haben (zum Markieren mehrerer Optionen am PC Strg-Taste (Ctrl) gedrückt halten):', 
+    usrname = TextField('Ihr Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
+    password = PasswordField('Geben Sie ein Passwort ein, falls Sie Ihre Daten später ändern oder löschen wollen. Das Passwort wird auf dem Server nicht-wiederherstellbar verschlüsselt gespeichert.', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
+    email_addr = TextField('Ihr E-mail Addresse', validators=[InputRequired(message="Bitte geben Sie einen E-mail Addresse an")])
+    plz = TextField('Bitte geben Sie Ihre Postleitzahl an', widget=NumberInput(), validators=[InputRequired('Bitte geben Sie Ihre Postleitzahl an'), validate_plz])    
+    sex = SelectField("Welches Geschlecht haben Sie",
+    choices=[
+            ('', ''), 
+            ('female', 'weiblich'),
+            ('male', 'männlich'), 
+     ] , validators=[InputRequired()])
+    age = IntegerField('Wie alt sind Sie (Jahre)', widget=NumberInput(), validators=[NumberRange(min=0, max=120, message="Bitte Zahl mit Nummern eingeben")])
+    travelhistory = SelectMultipleField('Sind Sie in den letzten 4 Wochen im Risikogebiet (Italien, Iran, China, Südkorea, Frankreich, Österreich, Spanien, USA) gewesen?',
+                  choices=[
+                            ('Nein', 'Nein'), 
+                            ('Ja', 'Ja')], 
+        validators=[InputRequired()])
+    contacthistory = SelectMultipleField('Hatten Sie engen Kontakt zu einem bestätigten Fall?Enger Kontakt mit einem bestätigten Fall bedeutet:Kontakt von Angesicht zu Angesicht länger als 15 Minuten, Direkter, physischer Kontakt (Berührung, Händeschütteln, Küssen), Länger als 15 Minuten direkt neben einer infizierten Person (weniger als 2 Meter) verbracht Kontakt mit oder Austausch von Körperflüssigkeiten, Teilen einer Wohnung?',
+                  choices=[
+                            ('Nein', 'Nein'), 
+                            ('Ja', 'Ja')], 
+        validators=[InputRequired()])
+    notherstest = IntegerField('Wie viele Menschen, mit denen Sie Kontakt hatten, wurden positiv getestet?', widget=NumberInput(), validators=[NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")]) 
+    symptoms = SelectMultipleField('Wählen Sie aus, unter welchen Symptomen Sie leiden(zum Markieren mehrerer Optionen am PC Strg-Taste (Ctrl) gedrückt halten):', 
         choices=[
-            ('Fieber', 'Fieber'), 
-            ('Müdigkeit', 'Müdigkeit'), 
-            ('Husten', 'Husten'), 
-            ('Niesen', 'Niesen'), 
-            ('Gliederschmerzen', 'Gliederschmerzen'), 
-            ('Schnupfen', 'Schnupfen'), 
-            ('Halsschmerzen', 'Halsschmerzen'), 
-            ('Durchfall', 'Durchfall'), 
-            ('Kopfschmerzen', 'Kopfschmerzen'), 
+            ('Fieber (38 C)', 'Fieber (38 C)'), 
+            ('Husten', 'Husten'),
             ('Kurzatmigkeit', 'Kurzatmigkeit'),
+            ('Muskel-Gelekschmerzen', 'Muskel-Gelekschmerzen'), 
+            ('Halsschmerzen', 'Halsschmerzen'), 
+            ('Kopfschmerzen', 'Kopfschmerzen'),
+            ('Übelkeit/Erbrechen', 'Übelkeit/Erbrechen'),
+            ('Durchfall', 'Durchfall'),
+            ('verstopfte Nase', 'verstopfte Nase'),            
         ], 
         validators=[Optional()], render_kw={"size": "10"})
-
     dayssymptoms = IntegerField('Seit wievielen Tagen haben Sie Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=None, message="Bitte Zahl mit Nummern eingeben")])
-    notherssymptoms = IntegerField('Wieviele Menschen, mit denen Sie Kontakt hatten, haben ähnliche Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")])
     arzt = SelectField('Waren Sie bereits wegen den Symptomen bei einer Ärztin / einem Arzt?', 
         choices=[
             ('Nein', 'Nein'), 
@@ -45,26 +64,16 @@ class QuizForm(Form):
             ('Positiv', 'Ja, Ergebnis positiv')],
         validators=[InputRequired()] )
     datetest = DateField('Wenn ja, wann fand der Test statt?', format='%Y-%m-%d', validators=[Optional()])
-    notherstest = IntegerField('Wieviele Menschen, mit denen Sie Kontakt hatten, wurden positiv getestet?', widget=NumberInput(), validators=[NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")])
     quarantine = SelectField('Haben Sie sich in Quarantäne begeben?', 
             choices=[
                 ('Nein', 'Nein'), 
                 ('Ja', 'Ja')],
             validators=[InputRequired()] )
-    age = IntegerField('Wie alt sind Sie (Jahre)', widget=NumberInput(), validators=[NumberRange(min=0, max=120, message="Bitte Zahl mit Nummern eingeben")])
-    sex = SelectField("Welches Geschlecht haben Sie",
-    choices=[
-            ('', ''), 
-            ('female', 'weiblich'),
-            ('male', 'männlich'), 
-     ] , validators=[InputRequired()])
-    plz = TextField('Bitte geben Sie Ihre Postleitzahl an', widget=NumberInput(), validators=[InputRequired('Bitte geben Sie Ihre Postleitzahl an'), validate_plz])
-    email_addr = TextField('Ihr Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
-    password = PasswordField('Geben Sie ein Passwort ein, falls Sie Ihre Daten später ändern oder löschen wollen. Das Passwort wird auf dem Server nicht-wiederherstellbar verschlüsselt gespeichert.', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
+    datequarantine = DateField('Wenn ja, wann hat Ihre Quarantäne begonnen??', format='%Y-%m-%d', validators=[Optional()])
+    #notherssymptoms = IntegerField('Wieviele Menschen, mit denen Sie Kontakt hatten, haben ähnliche Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")]) #commenting out a question that was earlier in the app, but does not appear in the google docs sheet.
     recaptcha = RecaptchaField()
     submit = SubmitField('Senden')
-
-
+    
 class DeleteForm(Form):
     email_addr = TextField('Benutzername', validators=[InputRequired(message="Bitte geben Sie einen Benutzernamen an")])
     password = PasswordField('Passwort', validators=[InputRequired(message="Bitte geben Sie ein Passwort ein")])
