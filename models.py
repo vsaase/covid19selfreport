@@ -22,6 +22,7 @@ class QuizForm(Form):
     sex = SelectField("Welches Geschlecht haben Sie",
         choices=[
             ('', ''), 
+            ('diverse', 'divers'),
             ('female', 'weiblich'),
             ('male', 'männlich'), 
         ] , validators=[InputRequired()])
