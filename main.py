@@ -1,6 +1,6 @@
 import sys
 import random
-from flask import Flask, render_template, jsonify, redirect
+from flask import Flask, render_template, jsonify, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, flash
 from flask_bootstrap import Bootstrap
@@ -9,7 +9,7 @@ import json
 from copy import deepcopy
 import firebase_admin
 import urllib
-import datetime
+from datetime import datetime, timedelta
 from firebase_admin import credentials, firestore
 from itsdangerous import URLSafeTimedSerializer, Signer
 
@@ -121,7 +121,11 @@ def report():
                 report_ref.document(oldreport["token"]).set(oldreport)
 
         #return render_template('confirm_mail.html', mail=dct["email_addr"])
-        return render_template('success.html', mail=dct["email_addr"], risk="mittleres")
+
+        template = render_template('success.html', mail=dct["email_addr"], risk="mittleres")
+        response = make_response(template)
+        response.set_cookie('timestamp', "{}".format(datetime.now()), max_age=60 * 60 * 24 * 365 * 2)
+        return response
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -144,9 +148,27 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # read Cookie
+    timestamp = request.cookies.get('timestamp')
+
+    # if not exist
+    date_time_obj = None
+    if not request.cookies.get('timestamp'):
+        # create & forward to mandatory questionaire
+        return redirect(url_for('report'))
+    else:
+        date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+
+    # if Update needed?
+    if date_time_obj + timedelta(seconds=15) < datetime.now() :
+        # foward to addiitional survey
+        return redirect(url_for('report'))
+    else:
+        # Show the user the map
+        return render_template('index.html')
 
 
 @app.route('/impressum')
