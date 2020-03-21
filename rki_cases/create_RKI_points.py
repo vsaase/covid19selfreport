@@ -8,13 +8,13 @@ from shapely.geometry import shape, Point
 from shapely.ops import unary_union
 from rki_cases_21032020 import cases
 
-#cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
-cred = credentials.Certificate("covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
+#cred = credentials.Certificate("../covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
+cred = credentials.Certificate("../covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 rki_simulation = db.collection("RKI_Laender")
 
-f = open("static/bundeslaender_simplify200.geojson")
+f = open("../static/bundeslaender_simplify200.geojson")
 data = json.load(f)
 f.close()
 

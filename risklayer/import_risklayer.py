@@ -8,8 +8,8 @@ import pandas as pd
 import datetime
 from copy import deepcopy
 
-#cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
-cred = credentials.Certificate("covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
+#cred = credentials.Certificate("../covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
+cred = credentials.Certificate("../covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 landkreise = db.collection("Landkreise")

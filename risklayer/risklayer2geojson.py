@@ -11,7 +11,7 @@ import math
 
 risklayer = pd.read_csv("Risklayer Kreisebene Quellen - Studie 20032020 0330 - Haupt.csv", header=4) 
 
-f = open("static/landkreise_simplify200.geojson")
+f = open("../static/landkreise_simplify200.geojson")
 data = json.load(f)
 f.close()
 
@@ -44,5 +44,5 @@ for i, row in risklayer.iterrows():
                 "color": "hsl(" + str(h) + ", 100%, 50%)" #"rgb(" + str(round(math.log(1+ncases)*256/math.log(1+maxval))) + ",0,0)"
             }
 
-with open('static/landkreise_risklayer.geojson', 'w') as json_file:
+with open('../static/landkreise_risklayer.geojson', 'w') as json_file:
   json.dump(data, json_file)
