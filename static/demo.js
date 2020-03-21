@@ -274,7 +274,7 @@ function init() {
 
     legend.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'info legend')
-        div.innerHTML += '<a href="/report"><img src="/static/add-button.svg" id="fixedbutton"></a>';
+        div.innerHTML += '<a href="/"><img src="/static/add-button.svg" id="fixedbutton"></a>';
         return div;
     };
 

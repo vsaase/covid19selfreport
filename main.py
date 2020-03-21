@@ -115,7 +115,7 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html',  name=name)
 
-@app.route('/report', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def report():
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
     if not form.validate_on_submit():
@@ -155,7 +155,7 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
-@app.route('/')
+@app.route('/map')
 def index():
     return render_template('index.html')
 
