@@ -13,6 +13,8 @@ from datetime import datetime, timedelta
 from firebase_admin import credentials, firestore
 from itsdangerous import URLSafeTimedSerializer, Signer
 
+from util import covertFirebaseTimeToPythonTime
+
 testing_mode = True
 
 if testing_mode:
@@ -35,9 +37,11 @@ landkreise = db.collection("Landkreise")
 
 BASECOORDS = [51.3150172,9.3205287]
 
+
 def generate_confirmation_token(signature):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     return serializer.dumps(signature, salt=app.config['SECURITY_PASSWORD_SALT'])
+
 
 def confirm_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -50,6 +54,7 @@ def confirm_token(token, expiration=3600):
     except:
         return False
     return signature
+
 
 def createreportdict(form):
     dct = {}
@@ -103,6 +108,7 @@ def landkreis(name):
         landkreise.document(old["name"] + str(old["number"])).set(old)
         return redirect("/")
 
+
 @app.route('/report', methods=['GET', 'POST'])
 def report():
     form = QuizForm(request.form)
@@ -124,7 +130,7 @@ def report():
 
         template = render_template('success.html', mail=dct["email_addr"], risk="mittleres")
         response = make_response(template)
-        response.set_cookie('timestamp', "{}".format(datetime.now()), max_age=60 * 60 * 24 * 365 * 2)
+        response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
         return response
 
 
@@ -151,19 +157,30 @@ def delete():
 
 @app.route('/')
 def index():
+
     # read Cookie
-    timestamp = request.cookies.get('timestamp')
+    signature = request.cookies.get('signature')
 
     # if not exist
     date_time_obj = None
-    if not request.cookies.get('timestamp'):
+    if not signature:
         # create & forward to mandatory questionaire
         return redirect(url_for('report'))
     else:
-        date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        oldreports = report_ref.where("signature", '==', signature).stream()
+        timestamp = None
+        for oldreport in oldreports:
+            oldreport = oldreport.to_dict()
+            if timestamp is None or \
+                    timestamp < oldreport["timestamp"]:
+                timestamp = oldreport["timestamp"]
+        date_time_obj = covertFirebaseTimeToPythonTime(timestamp)
+        now = datetime.utcnow()
+
 
     # if Update needed?
-    if date_time_obj + timedelta(seconds=15) < datetime.now() :
+    time_diff = timedelta(seconds=15)
+    if date_time_obj + time_diff < now:
         # foward to addiitional survey
         return redirect(url_for('report'))
     else:
@@ -195,6 +212,7 @@ def getreports():
         "date": report["timestamp"].strftime("%d.%m.%Y")
     } for report in reports]
     return jsonify({"coords": coords})
+
 
 @app.route('/getrki')
 def getrki():
