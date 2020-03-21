@@ -9,9 +9,9 @@ import datetime
 from copy import deepcopy
 import math
 
-risklayer = pd.read_csv("Risklayer Kreisebene Quellen - Studie 21032020 0330 - Haupt.csv", header=4) 
+risklayer = pd.read_csv("risklayer/Risklayer Kreisebene Quellen - Studie 21032020 0330 - Haupt.csv", header=4) 
 
-f = open("../static/landkreise_simplify200.geojson")
+f = open("static/landkreise_simplify200.geojson")
 data = json.load(f)
 f.close()
 
@@ -40,9 +40,9 @@ for i, row in risklayer.iterrows():
             feature["properties"]["risklayer"] = {
                 "ncases": ncases, 
                 "source": source, 
-                "popup": f'<p>{name}<br/>{ncases} Fälle<br/>{"{:10.2f}".format(100*casespp)} Prozent der Bevölkerung<br/>Quelle: <a href="{source}">{source}</a><br/>Daten <a href="https://docs.google.com/spreadsheets/d/1wg-s4_Lz2Stil6spQEYFdZaBEp8nWW26gVyfHqvcl8s/htmlview#gid=0">crowdsourced von Risklayer GmbH</a><br/>Stand 21.3. 03:30</p>',
+                "popup": f'<p>{name}<br/>{ncases} Fälle<br/>{"{:10.2f}".format(100*casespp)} Prozent der Bevölkerung<br/>Quelle: <a href="{source}">{source}</a><br/>Daten <a href="https://docs.google.com/spreadsheets/d/1wg-s4_Lz2Stil6spQEYFdZaBEp8nWW26gVyfHqvcl8s/htmlview#gid=0">crowdsourced von Risklayer GmbH</a><br/>Stand 21.3. 03:30<br/><a href="/landkreis/{name}">Statistik Dashboard</a></p>',
                 "color": "hsl(" + str(h) + ", 100%, 50%)" #"rgb(" + str(round(math.log(1+ncases)*256/math.log(1+maxval))) + ",0,0)"
             }
 
-with open('../static/landkreise_risklayer.geojson', 'w') as json_file:
+with open('static/landkreise_risklayer.geojson', 'w') as json_file:
   json.dump(data, json_file)
