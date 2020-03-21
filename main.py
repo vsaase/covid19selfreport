@@ -32,6 +32,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 report_ref = db.collection("Report")
 rki_ref = db.collection("RKI_Laender")
+landkreise_ref = db.collection("Landkreise")
 
 BASECOORDS = [51.3150172,9.3205287]
 
@@ -158,7 +159,7 @@ def info():
 @app.route('/getreports')
 def getreports():
     reports = [doc.to_dict() for doc in report_ref.where("overwritten", '==', False).stream()]
-    coords = [{
+    data = [{
         "latitude": report["latitude_rand"], 
         "longitude": report["longitude_rand"],
         "symptoms": report["symptoms"],
@@ -168,12 +169,12 @@ def getreports():
         "nothers": report["notherssymptoms"],
         "date": report["timestamp"].strftime("%d.%m.%Y")
     } for report in reports]
-    return jsonify({"coords": coords})
+    return jsonify({"data": data})
 
 @app.route('/getrki')
 def getrki():
     reports = [doc.to_dict() for doc in rki_ref.stream()]
-    coords = [{
+    data = [{
         "latitude": report["latitude"], 
         "longitude": report["longitude"],
         "test": report["test"],
@@ -181,7 +182,21 @@ def getrki():
         "source": report["source"],
         "popup": report["popup"]
     } for report in reports]
-    return jsonify({"coords": coords})
+    return jsonify({"data": data})
+
+
+@app.route('/getlaender')
+def getlaender():
+    reports = [doc.to_dict() for doc in landkreise_ref.where("overwritten", '==', False).stream()]
+    data = [{
+        "latitude": report["latitude"], 
+        "longitude": report["longitude"],
+        "test": report["test"],
+        "ncases": report["ncases"],
+        "source": report["source"],
+        "popup": report["popup"]
+    } for report in reports]
+    return jsonify({"data": data})
 
 
 if __name__ == '__main__':
