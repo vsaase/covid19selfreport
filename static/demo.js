@@ -190,7 +190,7 @@ function renderData() {
                 icon = orangeIcon;
             }
             let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-            marker.bindPopup('<p>'+arr["date"]+'<br/>' + arr["symptoms"] + '<br/>seit ' + arr["dayssymptoms"] + ' Tagen<br/>' + arr["nothers"] + ' Bekannte mit Symptomen<br/>Virustest: ' + arr["test"] + '</p>')
+            marker.bindPopup('<p>'+arr["date"]+'<br/>' + arr["symptoms"] + '<br/>seit ' + arr["dayssymptoms"] + ' Tagen<br/>Virustest: ' + arr["test"] + '</p>')
             return marker;
         });
         reportlayer = L.layerGroup(markers);
