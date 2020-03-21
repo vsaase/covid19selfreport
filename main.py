@@ -74,10 +74,20 @@ def createreportdict(form):
     dct["sex"] = form.sex.data
     dct["plz"] = form.plz.data
 
+
+    dct["headache"] = form.headache.data
+    dct["cough"] = form.cough.data
+    dct["shortnessbreath"] = form.shortnessbreath.data
+    dct["musclepain"] = form.musclepain.data
+    dct["sorethroat"] = form.sorethroat.data
+    dct["nausea"] = form.nausea.data
+    dct["diarrhea"] = form.diarrhea.data
+    dct["rhinorrhea"] = form.rhinorrhea.data
+
+
     dct["travelhistory"] = form.travelhistory.data
     dct["contacthistory"] = form.contacthistory.data
     dct["notherstest"] = form.notherstest.data
-    dct["symptoms"] = "" if form.symptoms.data == "None" else ', '.join(form.symptoms.data)
     dct["dayssymptoms"] = form.dayssymptoms.data
     dct["arzt"] = form.arzt.data
     dct["test"] = form.test.data
@@ -105,7 +115,7 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html',  name=name)
 
-@app.route('/report', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def report():
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
     if not form.validate_on_submit():
@@ -145,7 +155,7 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
-@app.route('/')
+@app.route('/map')
 def index():
     return render_template('index.html')
 
