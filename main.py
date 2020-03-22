@@ -129,7 +129,7 @@ def map(plz = '00000'):
         resp = make_response(render_template('map.html', form=form, show_report=False, mandatory_done=False, plz=plz))
 
         #DEBUG - remove the cookie to show report
-        resp.set_cookie('signature', '', expires=0)
+        # resp.set_cookie('signature', '', expires=0)
 
         return resp
 
