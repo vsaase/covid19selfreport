@@ -120,7 +120,7 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html',  name=name)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/report', methods=['GET', 'POST'])
 def report():
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
     if not form.validate_on_submit():
