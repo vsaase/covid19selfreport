@@ -111,6 +111,61 @@ function onLocationFound(e) {
 }
 
 
+function filter_selection(filter) {
+    var filter_btn = document.querySelector('button[id="'+filter+'"]');
+    var previous_filter  = document.querySelector('button.active');
+    if (filter_btn != previous_filter) {
+        previous_filter.classList.remove('active');
+        filter_btn.classList.add('active')
+    }
+}
+
+
+function report_overlay(filter_reports = false) {
+
+    var ids = []
+    if (filter_reports) {
+        for (const filter of document.querySelectorAll('input.filter[type="checkbox"]')) {
+            if (filter.checked) {
+                ids.push(filter.id)
+            }
+        }
+    }
+
+    $.getJSON("/getreports", function(obj) {
+        var markers = obj.data.map(function(arr) {
+            var relevant = true
+            if (filter_reports) {
+                relevant = false
+                for (id of ids) {
+                    if (arr[id] > 0) {
+                         relevant = true
+                         break
+                    }
+                }
+            }
+            if (relevant) {
+                var icon = greenIcon;
+                if(arr["test"]=="Positiv"){
+                    icon = orangeIcon;
+                }
+                let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
+                marker.bindPopup('<p>'+arr["date"]+'<br/>Virustest: ' + arr["test"] + '</p>')
+                return marker;
+            }
+        });
+        for (i = markers.length - 1; i >= 0; --i) {
+            if (markers[i]  == undefined ) {
+                markers.splice(i, 1)
+            }
+        }
+        if (markers.length > 0) {
+            reportlayer = L.layerGroup(markers);
+            map.addLayer(reportlayer);
+        }
+	});
+	}
+
 
 
 function renderData() {
@@ -174,7 +229,7 @@ function renderData() {
                     var center = [0,0]
                     center[1] = x_low + ((x_high - x_low) / 2);
                     center[0] = y_low + ((y_high - y_low) / 2);
-                    map.flyTo(center, 11);
+                    map.flyTo(center, 10);
                 }
                 return s;
             }
@@ -218,20 +273,10 @@ function renderData() {
 		});
     }
 
+    report_overlay()
 
-    $.getJSON("/getreports", function(obj) {
-        var markers = obj.data.map(function(arr) {
-            var icon = greenIcon;
-            if(arr["test"]=="Positiv"){
-                icon = orangeIcon;
-            }
-            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-            marker.bindPopup('<p>'+arr["date"]+'<br/>Virustest: ' + arr["test"] + '</p>')
-            return marker;
-        });
-        reportlayer = L.layerGroup(markers);
-        map.addLayer(reportlayer);
-	});
+
+
 	
 	/*
     $.getJSON("/getrki", function(obj) {
@@ -258,7 +303,7 @@ function renderData() {
 	*/
 }
 
-function onChange() {
+function on_display_options_change() {
     map.eachLayer(function (layer) {
         map.removeLayer(layer);
     });
@@ -266,37 +311,92 @@ function onChange() {
     renderData()
 }
 
+function toggle_dropdown() {
+    document.getElementById("filter_dropdown").classList.toggle("show");
+    document.querySelector("button.dropbtn").classList.toggle("active");
+}
+
+function all_checkbox() {
+    all_cb = document.getElementById("all_checkbox");
+    for (const checkbox of document.querySelectorAll("input.filter")) {
+        checkbox.checked = all_cb.checked;
+    }
+}
+
+function filter() {
+    map.removeLayer(reportlayer);
+    if (document.getElementById("all_checkbox").checked) {
+        report_overlay(false);
+    } else {
+        report_overlay(true);
+    }
+}
+
+
 function init() {
     makeMap();
     map.locate({setView: true, maxZoom: 13});
 
-    var filter = L.control({position: 'topright'});
+    var filter_dropdown = L.control({position:'topright'});
 
-    filter.onAdd = function (map) {
+    filter_dropdown.onAdd = function (map) {
+
+
+
         var div = L.DomUtil.create('div');
-        div.innerHTML = `
-            <div id="filter_container">
-              <button class="btn active" onclick="filterSelection('all')">Zeige alle Daten</button>
-              <button class="btn" onclick="filterSelection('relevant')">Zeige relevante Fälle</button>
+            div.innerHTML = `
+            <div class="dropdown">
+              <button onclick="toggle_dropdown()" class="dropbtn btn" style="float:right">Symptomfilter</button>
+              <br>
+              <br>
+              <div id="filter_dropdown" class="dropdown-content leaflet-control-layers leaflet-control-layers-expanded hide">
+                    <label><input type="checkbox" id='all_checkbox' onclick='all_checkbox()' checked="checked">
+                        Alle
+                    </label>
+                    <hr>
+                    <label class="symptom"><input type="checkbox" id="headache" class="filter leaflet-control-layers-overlays"  checked="checked">
+                        Kopfschmerzen
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="cough" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Husten
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="shortnessbreath" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Kurzatmigkeit
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="musclepain" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Muskelschmerzen
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="sorethroat" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Halsschmerzen
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="nausea" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Übelkeit
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="diarrhea" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Diarrhöe
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="rhinorrhea" class="filter leaflet-control-layers-overlays" checked="checked">
+                        Schnupfen
+                    </label>
+                    <button class="leaflet-control-layers-overlays btn" onclick="filter()" id="filter_btn">Filter anwenden.</button>
+              </div>
             </div>`;
         return div;
     }
+    filter_dropdown.addTo(map)
 
-    filter.addTo(map)
     var display_options = L.control({position: 'topright'});
 
     display_options.onAdd = function (map) {
         var div = L.DomUtil.create('div');
         div.innerHTML = `
-            <div class="leaflet-control-layers leaflet-control-layers-expanded">
-                <form onchange="onChange()" id="display_options">
+            <div class="leaflet-control-layers leaflet-control-layers-expanded" onchange="on_display_options_change()">
                     <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise">
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
                     Postleitzahlen</input>
-                </form>
             </div>`;
 
         return div;

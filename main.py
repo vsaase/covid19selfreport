@@ -20,9 +20,11 @@ testing_mode = True
 
 if testing_mode:
     from config_test import Config
+
     cred = credentials.Certificate("covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
 else:
     from config import Config
+
     cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
 
 app = Flask(__name__)
@@ -36,7 +38,7 @@ report_ref = db.collection("Report")
 rki_ref = db.collection("RKI_Laender")
 landkreise_ref = db.collection("Landkreise")
 
-BASECOORDS = [51.3150172,9.3205287]
+BASECOORDS = [51.3150172, 9.3205287]
 
 
 def generate_confirmation_token(signature):
@@ -68,7 +70,7 @@ def createreportdict(form):
     dct["accuracy"] = crd["accuracy"]
     if dct["latitude"] == 0:
         dct["longitude"], dct["latitude"] = plz2longlat(dct["plz"])
-        
+
     dct["latitude_rand"] = dct["latitude"] + 0.01 * random.random()
     dct["longitude_rand"] = dct["longitude"] + 0.01 * random.random()
 
@@ -79,7 +81,6 @@ def createreportdict(form):
     dct["sex"] = form.sex.data
     dct["plz"] = form.plz.data
 
-
     dct["headache"] = form.headache.data
     dct["cough"] = form.cough.data
     dct["shortnessbreath"] = form.shortnessbreath.data
@@ -88,7 +89,6 @@ def createreportdict(form):
     dct["nausea"] = form.nausea.data
     dct["diarrhea"] = form.diarrhea.data
     dct["rhinorrhea"] = form.rhinorrhea.data
-
 
     dct["travelhistory"] = form.travelhistory.data
     dct["contacthistory"] = form.contacthistory.data
@@ -100,13 +100,12 @@ def createreportdict(form):
     dct["quarantine"] = form.quarantine.data
     dct["datequarantine"] = None if form.datetest.data is None else form.datequarantine.data.strftime("%d.%m.%Y")
 
-    #dct["notherssymptoms"] = form.notherssymptoms.data
+    # dct["notherssymptoms"] = form.notherssymptoms.data
     try:
         dct["kreis"] = plz2kreis[dct["plz"]]
     except:
         dct["kreis"] = ""
         print(f"error converting PLZ {dct['plz']} to Kreisebene")
-
 
     dct["timestamp"] = firestore.SERVER_TIMESTAMP
     dct["email_confirmed"] = False
@@ -118,7 +117,8 @@ def createreportdict(form):
 
 @app.route('/landkreis/<name>', methods=['GET', 'POST'])
 def landkreis(name):
-    return render_template('landkreis.html',  name=name)
+    return render_template('landkreis.html', name=name)
+
 
 @app.route('/report', methods=['GET', 'POST'])
 def report():
@@ -127,7 +127,7 @@ def report():
         return render_template('report.html', form=form)
     if request.method == 'POST':
         dct = createreportdict(form)
-        
+
         report_ref.document(dct["token"]).set(dct)
 
         oldreports = report_ref.where("signature", '==', dct["signature"]).stream()
@@ -137,7 +137,7 @@ def report():
                 oldreport["overwritten"] = True
                 report_ref.document(oldreport["token"]).set(oldreport)
 
-        #return render_template('confirm_mail.html', mail=dct["email_addr"])
+        # return render_template('confirm_mail.html', mail=dct["email_addr"])
 
         template = render_template('success.html', mail=dct["email_addr"], risk="mittleres")
         response = make_response(template)
@@ -165,10 +165,12 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
+
 @app.route('/map/<plz>')
 @app.route("/map")
 def shortcut(plz='00000'):
     return render_template('index.html', plz=plz)
+
 
 @app.route('/<plz>')
 @app.route('/')
@@ -192,7 +194,6 @@ def index(plz='00000'):
         date_time_obj = covertFirebaseTimeToPythonTime(timestamp)
         now = datetime.utcnow()
 
-
     # if Update needed?
     time_diff = timedelta(seconds=15)
     if date_time_obj + time_diff < now:
@@ -201,7 +202,6 @@ def index(plz='00000'):
     else:
         # Show the user the map, if plz is given pan to it
         return render_template('index.html', plz=plz)
-
 
 
 @app.route('/impressum')
@@ -218,10 +218,18 @@ def info():
 def getreports():
     reports = [doc.to_dict() for doc in report_ref.where("overwritten", '==', False).stream()]
     data = [{
-        "latitude": report["latitude_rand"], 
+        "latitude": report["latitude_rand"],
         "longitude": report["longitude_rand"],
         "test": report["test"],
-        "date": report["timestamp"].strftime("%d.%m.%Y")
+        "date": report["timestamp"].strftime("%d.%m.%Y"),
+        "headache": 0 if "headache" not in report else report["headache"],
+        "cough": 0 if "cough" not in report else report["cough"],
+        "shortnessbreath": 0 if "shortnessbreath" not in report else report["shortnessbreath"],
+        "musclepain": 0 if "musclepain" not in report else report["musclepain"],
+        "sorethroat": 0 if "sorethroat" not in report else report["sorethroat"],
+        "nausea": 0 if "nausea" not in report else report["nausea"],
+        "diarrhea": 0 if "diarrhea" not in report else report["diarrhea"],
+        "rhinorrhea": 0 if "rhinorrhea" not in report else report["rhinorrhea"]
     } for report in reports]
     return jsonify({"data": data})
 
@@ -230,7 +238,7 @@ def getreports():
 def getrki():
     reports = [doc.to_dict() for doc in rki_ref.stream()]
     data = [{
-        "latitude": report["latitude"], 
+        "latitude": report["latitude"],
         "longitude": report["longitude"],
         "test": report["test"],
         "ncases": report["ncases"],
@@ -244,7 +252,7 @@ def getrki():
 def getlaender():
     reports = [doc.to_dict() for doc in landkreise_ref.where("overwritten", '==', False).stream()]
     data = [{
-        "latitude": report["latitude"], 
+        "latitude": report["latitude"],
         "longitude": report["longitude"],
         "test": report["test"],
         "ncases": report["ncases"],
