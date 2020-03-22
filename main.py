@@ -120,14 +120,15 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html',  name=name)
 
+@app.route('/<plz>', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
-def map():
+def map(plz = '00000'):
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
 
     signature = request.cookies.get('signature')
 
     if signature:
-        resp = make_response(render_template('map.html', form = form, show_report = False, mandatory_done=False))
+        resp = make_response(render_template('map.html', form=form, show_report=False, mandatory_done=False, plz=plz))
 
         #DEBUG - remove the cookie to show report
         # resp.set_cookie('signature', '', expires=0)
@@ -149,13 +150,13 @@ def map():
 
         #return render_template('confirm_mail.html', mail=dct["email_addr"])
 
-        template = render_template('map.html', form = form, show_report = True, mandatory_done=True)
+        template = render_template('map.html', form=form, show_report=True, mandatory_done=True)
         response = make_response(template)
         response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
         return response
 
     else:
-        return render_template('map.html', form = form, show_report = True, mandatory_done=False)
+        return render_template('map.html', form=form, show_report=True, mandatory_done=False)
 
 
 @app.route('/delete', methods=['GET', 'POST'])
