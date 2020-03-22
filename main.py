@@ -20,11 +20,9 @@ testing_mode = True
 
 if testing_mode:
     from config_test import Config
-
     cred = credentials.Certificate("covid19test-218a3-firebase-adminsdk-o6s3e-40e98ea53d.json")
 else:
     from config import Config
-
     cred = credentials.Certificate("covid19-selfreport-firebase-adminsdk-jfup1-8a45aedc76.json")
 
 app = Flask(__name__)
@@ -70,7 +68,7 @@ def createreportdict(form):
     dct["accuracy"] = crd["accuracy"]
     if dct["latitude"] == 0:
         dct["longitude"], dct["latitude"] = plz2longlat(dct["plz"])
-
+        
     dct["latitude_rand"] = dct["latitude"] + 0.01 * random.random()
     dct["longitude_rand"] = dct["longitude"] + 0.01 * random.random()
 
@@ -93,7 +91,7 @@ def createreportdict(form):
     dct["travelhistory"] = form.travelhistory.data
     dct["contacthistory"] = form.contacthistory.data
     dct["notherstest"] = form.notherstest.data
-    dct["dayssymptoms"] = form.dayssymptoms.data
+    # dct["dayssymptoms"] = form.dayssymptoms.data
     dct["arzt"] = form.arzt.data
     dct["test"] = form.test.data
     dct["datetest"] = None if form.datetest.data is None else form.datetest.data.strftime("%d.%m.%Y")
@@ -120,12 +118,23 @@ def landkreis(name):
     return render_template('landkreis.html', name=name)
 
 
-@app.route('/report', methods=['GET', 'POST'])
-def report():
+@app.route('/<plz>', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+def map(plz = '00000'):
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
-    if not form.validate_on_submit():
-        return render_template('report.html', form=form)
-    if request.method == 'POST':
+
+    signature = request.cookies.get('signature')
+
+    if signature:
+        resp = make_response(render_template('map.html', form=form, show_report=False, mandatory_done=False, plz=plz))
+
+        #DEBUG - remove the cookie to show report
+        # resp.set_cookie('signature', '', expires=0)
+
+        return resp
+
+    elif form.validate_on_submit():
+
         dct = createreportdict(form)
 
         report_ref.document(dct["token"]).set(dct)
@@ -139,10 +148,13 @@ def report():
 
         # return render_template('confirm_mail.html', mail=dct["email_addr"])
 
-        template = render_template('success.html', mail=dct["email_addr"], risk="mittleres")
+        template = render_template('map.html', form=form, show_report=True, mandatory_done=True)
         response = make_response(template)
         response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
         return response
+
+    else:
+        return render_template('map.html', form=form, show_report=True, mandatory_done=False)
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -170,38 +182,6 @@ def delete():
 @app.route("/map")
 def shortcut(plz='00000'):
     return render_template('index.html', plz=plz)
-
-
-@app.route('/<plz>')
-@app.route('/')
-def index(plz='00000'):
-    # read Cookie
-    signature = request.cookies.get('signature')
-
-    # if not exist
-    date_time_obj = None
-    if not signature:
-        # create & forward to mandatory questionaire
-        return redirect(url_for('report'))
-    else:
-        oldreports = report_ref.where("signature", '==', signature).stream()
-        timestamp = None
-        for oldreport in oldreports:
-            oldreport = oldreport.to_dict()
-            if timestamp is None or \
-                    timestamp < oldreport["timestamp"]:
-                timestamp = oldreport["timestamp"]
-        date_time_obj = covertFirebaseTimeToPythonTime(timestamp)
-        now = datetime.utcnow()
-
-    # if Update needed?
-    time_diff = timedelta(seconds=15)
-    if date_time_obj + time_diff < now:
-        # foward to addiitional survey
-        return redirect(url_for('report'))
-    else:
-        # Show the user the map, if plz is given pan to it
-        return render_template('index.html', plz=plz)
 
 
 @app.route('/impressum')

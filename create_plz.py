@@ -1,7 +1,5 @@
 import json
-import firebase_admin
 import random
-from firebase_admin import credentials, firestore
 import urllib
 from shapely.geometry import shape, Point, mapping
 from shapely.ops import unary_union
@@ -11,6 +9,9 @@ from plz.plz2kreis import plz5stellig2kreis, plz2kreis
 
 with open("plz/plz-5stellig.geojson") as f:
     data = json.load(f)
+
+with open('static/landkreise_simplify200.geojson') as f:
+    kreise = json.load(f)
 
 for i, feature in enumerate(data["features"]):
     try:
@@ -25,6 +26,10 @@ for i, feature in enumerate(data["features"]):
             feature["properties"]["Kreis"] = plz2kreis[feature["properties"]["plz"]]
         except:
             feature["properties"]["Kreis"] = ""
+    for kreis in kreise["features"]:
+        kreisname  = kreis["properties"]["BEZ"] + ' ' + kreis["properties"]["GEN"]
+        if kreisname == feature["properties"]["Kreis"]:
+            feature["properties"]["estimated_cases"] = round(kreis["properties"]["cases_per_100k"] * feature["properties"]["einwohner"] / 100000)
 
 
 with open('static/plz.geojson', 'w') as json_file:
