@@ -222,7 +222,7 @@ function renderData() {
                 var hue = 60-60*cases/red_cases;
                 if (hue < 0) hue = 0;
                 s.fillColor = 'hsl('+hue+',100%,50%)'
-                if (display_option == 'Gemeinden' && plz == feature.properties.destatis.zip) {
+                if (display_option == 'Gemeinden' && feature.properties.destatis != undefined && plz == feature.properties.destatis.zip) {
                     s.color= 'rgb(0,0,0)';
                     s.weight= 2;
                     var x_low = 400;
@@ -422,10 +422,11 @@ function init() {
                     Bundesländer</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="gemeinden" name="display_options" value="Gemeinden">
                     Gemeinden</input><br>
-//                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
-//                    Postleitzahlen</input>
+
                 </form>
             </div>`;
+            //                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
+//                    Postleitzahlen</input>
 
         return div;
     };
