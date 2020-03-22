@@ -4,6 +4,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    overflow: hidden
 }
 
 #map {
@@ -55,7 +56,7 @@ html, body {
     margin:40px auto;
     padding:10px 30px;
     overflow-y:scroll;
-    max-height:92%;
+    height:92%;
     -webkit-border-radius:.3em;border-radius:.3em;
     -webkit-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
     -moz-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
@@ -65,4 +66,12 @@ html, body {
 #report-wrapper.active {
     opacity: 1.0;
     transition:all 0.5s ease-out;
+}
+
+.form-group .form-control:focus { 
+    border-color:#77dd77;
+    outline:0;
+    -webkit-box-shadow:
+    inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(119,221,119,.6);
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(119,221,119,.6);
 }
