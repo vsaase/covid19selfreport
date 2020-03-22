@@ -222,7 +222,7 @@ function renderData() {
                 var hue = 60-60*cases/red_cases;
                 if (hue < 0) hue = 0;
                 s.fillColor = 'hsl('+hue+',100%,50%)'
-                if (display_option == 'Postleitzahlen' && plz == feature.properties.plz) {
+                if (display_option == 'Gemeinden' && plz == feature.properties.destatis.zip) {
                     s.color= 'rgb(0,0,0)';
                     s.weight= 2;
                     var x_low = 400;
@@ -285,17 +285,17 @@ function renderData() {
             map.addLayer(gemeindeareas);
 		});
     }
-    else if (display_option == 'Postleitzahlen') {
-        $.getJSON("/static/plz.geojson", function (data) {
-            plzareas = get_risklayers(data)
-            plzareas.bindPopup(function (layer) {
-				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte positiv getestete Fälle in "
-				popup += layer.feature.properties.plz + "<br/>basierend auf " + layer.feature.properties.Kreis
-				return popup
-            });
-            map.addLayer(plzareas);
-		});
-    }
+//    else if (display_option == 'Postleitzahlen') {
+//        $.getJSON("/static/plz.geojson", function (data) {
+//            plzareas = get_risklayers(data)
+//            plzareas.bindPopup(function (layer) {
+//				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte positiv getestete Fälle in "
+//				popup += layer.feature.properties.plz + "<br/>basierend auf " + layer.feature.properties.Kreis
+//				return popup
+//            });
+//            map.addLayer(plzareas);
+//		});
+//    }
 
     report_overlay()
 
@@ -414,15 +414,17 @@ function init() {
     display_options.onAdd = function (map) {
         var div = L.DomUtil.create('div');
         div.innerHTML = `
-            <div class="leaflet-control-layers leaflet-control-layers-expanded" onchange="on_display_options_change()">
+            <div class="leaflet-control-layers leaflet-control-layers-expanded">
+                <form onchange="on_display_options_change()" id="display_options">
                     <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise">
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="gemeinden" name="display_options" value="Gemeinden">
                     Gemeinden</input><br>
-                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
-                    Postleitzahlen</input>
+//                    <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
+//                    Postleitzahlen</input>
+                </form>
             </div>`;
 
         return div;
@@ -433,7 +435,7 @@ function init() {
 	    var display_option = document.querySelector('input[id="landkreise"]').checked = true;
     }
     else {
-	    var display_option = document.querySelector('input[id="plz"]').checked = true;
+	    var display_option = document.querySelector('input[id="gemeinden"]').checked = true;
     }
 
     var legend = L.control({position: 'bottomright'});
