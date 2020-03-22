@@ -10,7 +10,8 @@
 
     <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.scrollbar.css')}}">
 
 	<title>Covid-19 Selfreport</title>
 
@@ -29,7 +30,7 @@
 
 				<div id="report-success-wrapper">
 
-					<div class="container">
+					<div class="container scrollbar-primary">
 						<h3>Herzlichen Dank für Ihre Mithilfe!</h3>
 						<p>
 					    Sie können Ihre Daten ändern indem Sie das Formular einfach erneut unter Verwendung des Benutzernamens {{ username }} und des gleichen Passworts abschicken.<br/>
@@ -48,7 +49,7 @@
 				<div id="report-mandatory-wrapper">
 					{% import "bootstrap/wtf.html" as wtf %}
 
-					<div class="container">
+					<div class="container scrollbar-primary">
 						<h3>Willkommen bei Covid-19 Report.</h3>
 						<p>
 							Die aktuelle Coronavirus-Pandemie stellt uns alle vor große Herausforderungen und schränkt unser Leben in höchstem Maße ein.
