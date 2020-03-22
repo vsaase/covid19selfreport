@@ -93,7 +93,7 @@ def createreportdict(form):
     dct["travelhistory"] = form.travelhistory.data
     dct["contacthistory"] = form.contacthistory.data
     dct["notherstest"] = form.notherstest.data
-    dct["dayssymptoms"] = form.dayssymptoms.data
+    # dct["dayssymptoms"] = form.dayssymptoms.data
     dct["arzt"] = form.arzt.data
     dct["test"] = form.test.data
     dct["datetest"] = None if form.datetest.data is None else form.datetest.data.strftime("%d.%m.%Y")
@@ -120,14 +120,25 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html',  name=name)
 
-@app.route('/report', methods=['GET', 'POST'])
-def report():
+@app.route('/<plz>', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+def map(plz = '00000'):
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
-    if not form.validate_on_submit():
-        return render_template('report.html', form=form)
-    if request.method == 'POST':
+
+    signature = request.cookies.get('signature')
+
+    if signature:
+        resp = make_response(render_template('map.html', form=form, show_report=False, mandatory_done=False, plz=plz))
+
+        #DEBUG - remove the cookie to show report
+        # resp.set_cookie('signature', '', expires=0)
+
+        return resp
+
+    elif form.validate_on_submit():
+
         dct = createreportdict(form)
-        
+    
         report_ref.document(dct["token"]).set(dct)
 
         oldreports = report_ref.where("signature", '==', dct["signature"]).stream()
@@ -139,10 +150,13 @@ def report():
 
         #return render_template('confirm_mail.html', mail=dct["email_addr"])
 
-        template = render_template('success.html', mail=dct["email_addr"], risk="mittleres")
+        template = render_template('map.html', form=form, show_report=True, mandatory_done=True)
         response = make_response(template)
         response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
         return response
+
+    else:
+        return render_template('map.html', form=form, show_report=True, mandatory_done=False)
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -169,6 +183,8 @@ def delete():
 @app.route("/map")
 def shortcut(plz='00000'):
     return render_template('index.html', plz=plz)
+
+# obsolete - can be deleted
 
 @app.route('/<plz>')
 @app.route('/')
