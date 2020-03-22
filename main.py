@@ -122,7 +122,6 @@ def landkreis(name):
 
 @app.route('/', methods=['GET', 'POST'])
 def map():
-
     form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
 
     signature = request.cookies.get('signature')
@@ -179,11 +178,16 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
+@app.route('/map/<plz>')
+@app.route("/map")
+def shortcut(plz='00000'):
+    return render_template('index.html', plz=plz)
 
 # obsolete - can be deleted
-@app.route('/')
-def index():
 
+@app.route('/<plz>')
+@app.route('/')
+def index(plz='00000'):
     # read Cookie
     signature = request.cookies.get('signature')
 
@@ -210,8 +214,9 @@ def index():
         # foward to addiitional survey
         return redirect(url_for('report'))
     else:
-        # Show the user the map
-        return render_template('index.html')
+        # Show the user the map, if plz is given pan to it
+        return render_template('index.html', plz=plz)
+
 
 
 @app.route('/impressum')
@@ -230,13 +235,9 @@ def getreports():
     data = [{
         "latitude": report["latitude_rand"], 
         "longitude": report["longitude_rand"],
-        "symptoms": report["symptoms"],
-        "dayssymptoms": report["dayssymptoms"],
         "test": report["test"],
-        "source": report["source"],
-        #"nothers": report["notherssymptoms"],
         "date": report["timestamp"].strftime("%d.%m.%Y")
-    } for report in reports if report["symptoms"] != ""]
+    } for report in reports]
     return jsonify({"data": data})
 
 

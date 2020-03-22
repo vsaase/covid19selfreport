@@ -117,6 +117,7 @@ function renderData() {
 	var zoomlevel = map.getZoom();
 	var display_option = document.querySelector('input[name="display_options"]:checked').value;
 
+
 	function onEachFeature(feature, layer) {
 		if(feature.properties.cases){
 			layer.bindTooltip(
@@ -147,13 +148,34 @@ function renderData() {
                     var cases = feature.properties.Fallzahl/feature.properties.LAN_ew_EWZ*100;
                     var red_cases = 0.1;
                 } else {
-                    var cases = feature.properties.einwohner;
-                    var red_cases = 50000;
+                    var cases = feature.properties.estimated_cases;
+                    var red_cases = 100;
 				}
                 var hue = 60-60*cases/red_cases;
                 if (hue < 0) hue = 0;
                 s.fillColor = 'hsl('+hue+',100%,50%)'
-
+                if (display_option == 'Postleitzahlen' && plz == feature.properties.plz) {
+                    s.color= 'rgb(0,0,0)';
+                    s.weight= 2;
+                    var x_low = 400;
+                    var x_high = 0;
+                    var y_low = 400;
+                    var y_high = 0;
+                    var x = 0
+                    var y = 0
+                    for (const coord of feature.geometry.coordinates[0]){
+                        x = parseFloat(coord[0])
+                        y = parseFloat(coord[1])
+                        if (x_high < x) x_high = x
+                        if (x_low > x) x_low = x
+                        if (y_high < y) y_high = y
+                        if (y_low > y) y_low = y
+                    }
+                    var center = [0,0]
+                    center[1] = x_low + ((x_high - x_low) / 2);
+                    center[0] = y_low + ((y_high - y_low) / 2);
+                    map.flyTo(center, 11);
+                }
                 return s;
             }
         });
@@ -188,7 +210,7 @@ function renderData() {
         $.getJSON("/static/plz.geojson", function (data) {
             plzareas = get_risklayers(data)
             plzareas.bindPopup(function (layer) {
-				var popup = "<p>" + layer.feature.properties.einwohner + " Einwohner in "
+				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte Fälle in "
 				popup += layer.feature.properties.plz + " in " + layer.feature.properties.Kreis
 				return popup
             });
@@ -204,7 +226,7 @@ function renderData() {
                 icon = orangeIcon;
             }
             let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-            marker.bindPopup('<p>'+arr["date"]+'<br/>' + arr["symptoms"] + '<br/>seit ' + arr["dayssymptoms"] + ' Tagen<br/>Virustest: ' + arr["test"] + '</p>')
+            marker.bindPopup('<p>'+arr["date"]+'<br/>Virustest: ' + arr["test"] + '</p>')
             return marker;
         });
         reportlayer = L.layerGroup(markers);
@@ -248,16 +270,27 @@ function init() {
     makeMap();
     map.locate({setView: true, maxZoom: 13});
 
+    var filter = L.control({position: 'topright'});
+
+    filter.onAdd = function (map) {
+        var div = L.DomUtil.create('div');
+        div.innerHTML = `
+            <div id="filter_container">
+              <button class="btn active" onclick="filterSelection('all')">Zeige alle Daten</button>
+              <button class="btn" onclick="filterSelection('relevant')">Zeige relevante Fälle</button>
+            </div>`;
+        return div;
+    }
+
+    filter.addTo(map)
     var display_options = L.control({position: 'topright'});
-
-
 
     display_options.onAdd = function (map) {
         var div = L.DomUtil.create('div');
         div.innerHTML = `
             <div class="leaflet-control-layers leaflet-control-layers-expanded">
                 <form onchange="onChange()" id="display_options">
-                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise" checked>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise">
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
@@ -265,10 +298,17 @@ function init() {
                     Postleitzahlen</input>
                 </form>
             </div>`;
-    return div;
-    };
-    display_options.addTo(map)
 
+        return div;
+    };
+
+    display_options.addTo(map)
+    if (plz == '00000'){
+	    var display_option = document.querySelector('input[id="landkreise"]').checked = true;
+    }
+    else {
+	    var display_option = document.querySelector('input[id="plz"]').checked = true;
+    }
 
     var legend = L.control({position: 'bottomright'});
 
