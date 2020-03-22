@@ -165,12 +165,14 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
+@app.route('/map/<plz>')
 @app.route("/map")
-def shortcut():
-    return render_template('index.html')
+def shortcut(plz='00000'):
+    return render_template('index.html', plz=plz)
 
+@app.route('/<plz>')
 @app.route('/')
-def index():
+def index(plz='00000'):
     # read Cookie
     signature = request.cookies.get('signature')
 
@@ -197,8 +199,9 @@ def index():
         # foward to addiitional survey
         return redirect(url_for('report'))
     else:
-        # Show the user the map
-        return render_template('index.html')
+        # Show the user the map, if plz is given pan to it
+        return render_template('index.html', plz=plz)
+
 
 
 @app.route('/impressum')

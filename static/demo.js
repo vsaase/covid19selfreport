@@ -117,6 +117,19 @@ function renderData() {
 	var zoomlevel = map.getZoom();
 	var display_option = document.querySelector('input[name="display_options"]:checked').value;
 
+    console.log(plz)
+	if (plz != '00000'){
+	    for (const selector of document.querySelectorAll('input[name="display_options"]')) {
+	        if (selector.id != 'plz'){
+	            selector.checked = false
+	        } else {
+	            selector.checked = true
+	        }
+	    }
+	    display_option = 'Postleitzahlen'
+	}
+
+
 	function onEachFeature(feature, layer) {
 		if(feature.properties.cases){
 			layer.bindTooltip(
@@ -153,7 +166,28 @@ function renderData() {
                 var hue = 60-60*cases/red_cases;
                 if (hue < 0) hue = 0;
                 s.fillColor = 'hsl('+hue+',100%,50%)'
-
+                if (display_option == 'Postleitzahlen' && plz == feature.properties.plz) {
+                    s.color= 'rgb(0,0,0)';
+                    s.weight= 2;
+                    var x_low = 400;
+                    var x_high = 0;
+                    var y_low = 400;
+                    var y_high = 0;
+                    var x = 0
+                    var y = 0
+                    for (const coord of feature.geometry.coordinates[0]){
+                        x = parseFloat(coord[0])
+                        y = parseFloat(coord[1])
+                        if (x_high < x) x_high = x
+                        if (x_low > x) x_low = x
+                        if (y_high < y) y_high = y
+                        if (y_low > y) y_low = y
+                    }
+                    var center = [0,0]
+                    center[1] = x_low + ((x_high - x_low) / 2);
+                    center[0] = y_low + ((y_high - y_low) / 2);
+                    map.flyTo(center, 11);
+                }
                 return s;
             }
         });
@@ -249,8 +283,6 @@ function init() {
     map.locate({setView: true, maxZoom: 13});
 
     var display_options = L.control({position: 'topright'});
-
-
 
     display_options.onAdd = function (map) {
         var div = L.DomUtil.create('div');
