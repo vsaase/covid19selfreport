@@ -370,7 +370,7 @@ function init() {
         var div = L.DomUtil.create('div');
             div.innerHTML = `
             <div class="dropdown">
-              <button onclick="toggle_dropdown()" class="dropbtn btn" style="float:right">Filter</button>
+              <button onclick="toggle_dropdown()" class="dropbtn btn" style="float:right">Filter für Meldungen der Benutzer</button>
               <br>
               <br>
               <div id="filter_dropdown" class="dropdown-content leaflet-control-layers leaflet-control-layers-expanded hide">
