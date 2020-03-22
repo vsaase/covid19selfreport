@@ -160,8 +160,8 @@ function renderData() {
                     var cases = feature.properties.Fallzahl/feature.properties.LAN_ew_EWZ*100;
                     var red_cases = 0.1;
                 } else {
-                    var cases = feature.properties.einwohner;
-                    var red_cases = 50000;
+                    var cases = feature.properties.estimated_cases;
+                    var red_cases = 100;
 				}
                 var hue = 60-60*cases/red_cases;
                 if (hue < 0) hue = 0;
@@ -222,7 +222,7 @@ function renderData() {
         $.getJSON("/static/plz.geojson", function (data) {
             plzareas = get_risklayers(data)
             plzareas.bindPopup(function (layer) {
-				var popup = "<p>" + layer.feature.properties.einwohner + " Einwohner in "
+				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte Fälle in "
 				popup += layer.feature.properties.plz + " in " + layer.feature.properties.Kreis
 				return popup
             });
