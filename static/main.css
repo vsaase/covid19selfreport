@@ -56,7 +56,7 @@ html, body {
     margin:40px auto;
     padding:10px 30px;
     overflow-y:scroll;
-    max-height:92%;
+    height:92%;
     -webkit-border-radius:.3em;border-radius:.3em;
     -webkit-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
     -moz-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.36);
