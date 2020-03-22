@@ -165,10 +165,12 @@ def delete():
 
         return render_template('delete_success.html', ndel=ndel)
 
+@app.route("/map")
+def shortcut():
+    return render_template('index.html')
 
 @app.route('/')
 def index():
-
     # read Cookie
     signature = request.cookies.get('signature')
 
@@ -215,13 +217,9 @@ def getreports():
     data = [{
         "latitude": report["latitude_rand"], 
         "longitude": report["longitude_rand"],
-        "symptoms": report["symptoms"],
-        "dayssymptoms": report["dayssymptoms"],
         "test": report["test"],
-        "source": report["source"],
-        #"nothers": report["notherssymptoms"],
         "date": report["timestamp"].strftime("%d.%m.%Y")
-    } for report in reports if report["symptoms"] != ""]
+    } for report in reports]
     return jsonify({"data": data})
 
 
