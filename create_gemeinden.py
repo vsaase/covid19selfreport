@@ -23,9 +23,17 @@ for i, feature in enumerate(data["features"]):
     try:
         feature["properties"]["Kreis"] = gemeinde2kreis[feature["properties"]["DEBKG_ID"]]
     except:
+        print("no kreis for " + feature["properties"]["GEN"])
         feature["properties"]["Kreis"] = ""
     for kreis in kreise["features"]:
         kreisname  = kreis["properties"]["BEZ"] + ' ' + kreis["properties"]["GEN"]
+
+        if feature["properties"]["Kreis"] == "":
+            kreispolygon = shape(kreis["geometry"])
+            gemeindepolygon = shape(feature["geometry"])
+            if gemeindepolygon.intersection(kreispolygon).area>0:
+                feature["properties"]["Kreis"] = kreisname
+
         if kreisname == feature["properties"]["Kreis"]:
             if "destatis" in feature["properties"]:
                 feature["properties"]["estimated_cases"] = round(kreis["properties"]["cases_per_100k"] * feature["properties"]["destatis"]["population"] / 100000)
