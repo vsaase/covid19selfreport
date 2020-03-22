@@ -148,13 +148,13 @@ def map(plz = '00000'):
 
         # return render_template('confirm_mail.html', mail=dct["email_addr"])
 
-        template = render_template('map.html', form=form, show_report=True, mandatory_done=True)
+        template = render_template('map.html', form=form, show_report=True, mandatory_done=True, plz=plz)
         response = make_response(template)
         response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
         return response
 
     else:
-        return render_template('map.html', form=form, show_report=True, mandatory_done=False)
+        return render_template('map.html', form=form, show_report=True, mandatory_done=False, plz=plz)
 
 
 @app.route('/delete', methods=['GET', 'POST'])
