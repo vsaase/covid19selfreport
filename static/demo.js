@@ -117,18 +117,6 @@ function renderData() {
 	var zoomlevel = map.getZoom();
 	var display_option = document.querySelector('input[name="display_options"]:checked').value;
 
-    console.log(plz)
-	if (plz != '00000'){
-	    for (const selector of document.querySelectorAll('input[name="display_options"]')) {
-	        if (selector.id != 'plz'){
-	            selector.checked = false
-	        } else {
-	            selector.checked = true
-	        }
-	    }
-	    display_option = 'Postleitzahlen'
-	}
-
 
 	function onEachFeature(feature, layer) {
 		if(feature.properties.cases){
@@ -282,6 +270,19 @@ function init() {
     makeMap();
     map.locate({setView: true, maxZoom: 13});
 
+    var filter = L.control({position: 'topright'});
+
+    filter.onAdd = function (map) {
+        var div = L.DomUtil.create('div');
+        div.innerHTML = `
+            <div id="filter_container">
+              <button class="btn active" onclick="filterSelection('all')">Zeige alle Daten</button>
+              <button class="btn" onclick="filterSelection('relevant')">Zeige relevante Fälle</button>
+            </div>`;
+        return div;
+    }
+
+    filter.addTo(map)
     var display_options = L.control({position: 'topright'});
 
     display_options.onAdd = function (map) {
@@ -289,7 +290,7 @@ function init() {
         div.innerHTML = `
             <div class="leaflet-control-layers leaflet-control-layers-expanded">
                 <form onchange="onChange()" id="display_options">
-                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise" checked>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise">
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
@@ -297,10 +298,17 @@ function init() {
                     Postleitzahlen</input>
                 </form>
             </div>`;
-    return div;
-    };
-    display_options.addTo(map)
 
+        return div;
+    };
+
+    display_options.addTo(map)
+    if (plz == '00000'){
+	    var display_option = document.querySelector('input[id="landkreise"]').checked = true;
+    }
+    else {
+	    var display_option = document.querySelector('input[id="plz"]').checked = true;
+    }
 
     var legend = L.control({position: 'bottomright'});
 
