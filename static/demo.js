@@ -219,6 +219,17 @@ function renderData() {
             map.addLayer(kreisareas);
 		});
     }
+    else if (display_option == 'Gemeinden') {
+        $.getJSON("/static/gemeinden_estimated.geojson", function (data) {
+            gemeindeareas = get_risklayers(data)
+            gemeindeareas.bindPopup(function (layer) {
+				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte positiv getestete Fälle in "
+				popup += layer.feature.properties.BEZ + " " + layer.feature.properties.GEN + "<br/>basierend auf " + layer.feature.properties.Kreis
+				return popup
+            });
+            map.addLayer(gemeindeareas);
+		});
+    }
     else if (display_option == 'Postleitzahlen') {
         $.getJSON("/static/plz.geojson", function (data) {
             plzareas = get_risklayers(data)
@@ -307,6 +318,8 @@ function init() {
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="gemeinden" name="display_options" value="Gemeinden">
+                    Gemeinden</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
                     Postleitzahlen</input>
                 </form>
