@@ -138,7 +138,7 @@ function report_overlay(filter_reports = false) {
             if (filter_reports) {
                 relevant = false
                 for (id of ids) {
-                    if (arr[id] > 0) {
+                    if (arr[id] > 0 || (id == "test" && arr[id] =="Positiv") ) {
                          relevant = true
                          break
                     }
@@ -370,7 +370,7 @@ function init() {
         var div = L.DomUtil.create('div');
             div.innerHTML = `
             <div class="dropdown">
-              <button onclick="toggle_dropdown()" class="dropbtn btn" style="float:right">Symptomfilter</button>
+              <button onclick="toggle_dropdown()" class="dropbtn btn" style="float:right">Filter</button>
               <br>
               <br>
               <div id="filter_dropdown" class="dropdown-content leaflet-control-layers leaflet-control-layers-expanded hide">
@@ -378,6 +378,9 @@ function init() {
                         Alle
                     </label>
                     <hr>
+                    <label class="symptom"><input type="checkbox" id="test" class="filter leaflet-control-layers-overlays"  checked="checked">
+                        positiv getestet
+                    </label>
                     <label class="symptom"><input type="checkbox" id="headache" class="filter leaflet-control-layers-overlays"  checked="checked">
                         Kopfschmerzen
                     </label>
