@@ -1,12 +1,9 @@
 import json
-import firebase_admin
 import random
-from firebase_admin import credentials, firestore
 import urllib
 from shapely.geometry import shape, Point, mapping
 from shapely.ops import unary_union
 import requests
-import math
 from datetime import datetime
 from plz.plz2kreis import plz5stellig2kreis, plz2kreis
 

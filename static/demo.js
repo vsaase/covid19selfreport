@@ -130,6 +130,19 @@ function renderData() {
 				}
 			).openTooltip()
 		}
+		/* crashes the browser window, too computationally expensive for large number of PLZ areas?
+		if(feature.properties.estimated_cases){
+			layer.bindTooltip(
+				"~ " + String(feature.properties.estimated_cases),
+				{
+					className: 'tooltip',
+					permanent: true, 
+					direction:"center",
+					opacity: 0.8
+				}
+			).openTooltip()
+		}
+		*/
 	}
     function get_risklayers(data) {
         layers =  L.geoJSON(data, {
@@ -206,12 +219,23 @@ function renderData() {
             map.addLayer(kreisareas);
 		});
     }
+    else if (display_option == 'Gemeinden') {
+        $.getJSON("/static/gemeinden_estimated.geojson", function (data) {
+            gemeindeareas = get_risklayers(data)
+            gemeindeareas.bindPopup(function (layer) {
+				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte positiv getestete Fälle in "
+				popup += layer.feature.properties.BEZ + " " + layer.feature.properties.GEN + "<br/>basierend auf " + layer.feature.properties.Kreis
+				return popup
+            });
+            map.addLayer(gemeindeareas);
+		});
+    }
     else if (display_option == 'Postleitzahlen') {
         $.getJSON("/static/plz.geojson", function (data) {
             plzareas = get_risklayers(data)
             plzareas.bindPopup(function (layer) {
-				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte Fälle in "
-				popup += layer.feature.properties.plz + " in " + layer.feature.properties.Kreis
+				var popup = "<p>" + layer.feature.properties.estimated_cases + " geschätzte positiv getestete Fälle in "
+				popup += layer.feature.properties.plz + "<br/>basierend auf " + layer.feature.properties.Kreis
 				return popup
             });
             map.addLayer(plzareas);
@@ -294,6 +318,8 @@ function init() {
                     Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="gemeinden" name="display_options" value="Gemeinden">
+                    Gemeinden</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="plz" name="display_options" value="Postleitzahlen">
                     Postleitzahlen</input>
                 </form>
