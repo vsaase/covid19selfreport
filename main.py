@@ -33,8 +33,6 @@ Bootstrap(app)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 report_ref = db.collection("Report")
-rki_ref = db.collection("RKI_Laender")
-landkreise_ref = db.collection("Landkreise")
 
 BASECOORDS = [51.3150172, 9.3205287]
 
