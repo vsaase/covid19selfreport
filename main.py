@@ -214,33 +214,5 @@ def getreports():
     return jsonify({"data": data})
 
 
-@app.route('/getrki')
-def getrki():
-    reports = [doc.to_dict() for doc in rki_ref.stream()]
-    data = [{
-        "latitude": report["latitude"],
-        "longitude": report["longitude"],
-        "test": report["test"],
-        "ncases": report["ncases"],
-        "source": report["source"],
-        "popup": report["popup"]
-    } for report in reports]
-    return jsonify({"data": data})
-
-
-@app.route('/getlaender')
-def getlaender():
-    reports = [doc.to_dict() for doc in landkreise_ref.where("overwritten", '==', False).stream()]
-    data = [{
-        "latitude": report["latitude"],
-        "longitude": report["longitude"],
-        "test": report["test"],
-        "ncases": report["ncases"],
-        "source": report["source"],
-        "popup": report["popup"]
-    } for report in reports]
-    return jsonify({"data": data})
-
-
 if __name__ == '__main__':
     app.run(debug=True)

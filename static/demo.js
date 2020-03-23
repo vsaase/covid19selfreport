@@ -298,33 +298,6 @@ function renderData() {
 //    }
 
     report_overlay()
-
-
-
-	
-	/*
-    $.getJSON("/getrki", function(obj) {
-
-        var markers = obj.data.map(function(arr) {
-			var icon = redIcon
-			if(arr["ncases"] == 0){
-				icon = blackIcon
-			}
-			if(arr["source"] == "RKI"){
-				icon = blueIcon
-			}
-            let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon});
-            if (display_option == "Bundesländer") {
-            }
-            marker.bindPopup(arr["popup"])
-            return marker;
-        });
-
-        rki_layer = L.layerGroup(markers);
-        map.addLayer(rki_layer);
-
-	});
-	*/
 }
 
 function on_display_options_change() {
