@@ -1,17 +1,26 @@
 from flask_wtf import Form, RecaptchaField
 from wtforms.widgets.html5 import NumberInput, URLInput
 from wtforms.fields.html5 import URLField
-from wtforms import SubmitField, HiddenField, TextField, SelectField, SelectMultipleField, IntegerField, PasswordField, BooleanField
+from wtforms import SubmitField, HiddenField ,TextField, SelectField, SelectMultipleField, IntegerField, PasswordField, BooleanField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Length, Email, InputRequired, NumberRange, Optional, URL, ValidationError
 import re
 from plz.plz2kreis import plz_exists
 
-
 def validate_plz(form, field):
     if not re.search(r"^[0-9]{5}$", field.data) or not plz_exists(field.data):
         raise ValidationError("Bitte geben Sie eine gültige Postleitzahl an")
-    
+
+def validate_fever(form, field):
+    cleaned = field.data.replace(",", ".").replace('°','').replace("Grad","").strip()
+    try:
+        fever = float(cleaned)
+        field.data = str(float(cleaned))
+    except:
+        raise ValidationError("Bitte geben Sie eine gültige Körpertemperatur an.")
+    if fever < 32 or fever > 44:
+        raise ValidationError("Bitte geben Sie eine Körpertemperatur zwischen 32 und 44 an.")
+
 # Form ORM
 class QuizForm(Form):
     geolocation = HiddenField("geolocation", validators=[Optional()])
@@ -39,6 +48,7 @@ class QuizForm(Form):
         validators=[InputRequired()])
     notherstest = IntegerField('Wie viele Menschen, mit denen Sie Kontakt hatten, wurden positiv getestet?', widget=NumberInput(), validators=[NumberRange(min=0, max=100, message="Bitte Zahl mit Nummern eingeben")]) 
 
+    fever = TextField("Falls Sie Fieber hatten, welche Temperatur haben Sie gemessen?", default="", validators=[Optional(), validate_fever])
     headache = IntegerField('Wie stark leiden Sie aktuell unter Kopfschmerzen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
     cough = IntegerField('Wie stark leiden Sie aktuell unter Husten? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
     shortnessbreath = IntegerField('Wie stark leiden Sie aktuell unter Kurzatmigkeit? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])

@@ -2,8 +2,10 @@ Flask==1.1.1
 flask_sqlalchemy
 flask_bootstrap
 flask_wtf
+flask_babel
 firebase_admin
 itsdangerous
 geojson
 shapely
 pandas
+babel

@@ -140,7 +140,7 @@ function report_overlay(filter_reports = false) {
             if (filter_reports) {
                 relevant = false
                 for (id of ids) {
-                    if (arr[id] > 0 || (id == "test" && arr[id] =="Positiv") ) {
+                    if ((id == "test" && arr[id] =="Positiv") || (id == "fever" && arr[id] != "") || arr[id] > 0) {
                          relevant = true
                          break
                     }
@@ -153,13 +153,16 @@ function report_overlay(filter_reports = false) {
                 }
                 let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
 
-                popuptext = '<p>'+arr["date"]+'<br/>'
+                let popuptext = '<p>'+arr["date"]+'<br/>'
+                console.log(arr)
                 for (id of Object.keys(symptomid2german)) {
-                    if (arr[id] > 0 ) {
-                        popuptext += symptomid2german[id] + '<br/>' 
+                    console.log(((id == "test" && arr[id] =="Positiv") || (id == "fever" && arr[id] != "") || arr[id] > 0))
+                    if ((id == "test" && arr[id] =="Positiv") || (id == "fever" && arr[id] != "") || arr[id] > 0) {
+                        popuptext += symptomid2german[id] + ' ' + String(arr[id]) + '<br/>' 
                     }
                 }
-                popuptext += 'Virustest: ' + arr["test"] + '</p>'
+                popuptext += '</p>'
+                console.log(popuptext)
                 marker.bindPopup(popuptext)
                 return marker;
             }
@@ -340,6 +343,7 @@ function filter() {
 }
 
 var symptomid2german = {
+    "fever": "Fieber",
     "headache": "Kopfschmerzen",
     "cough": "Husten",
     "shortnessbreath": "Kurzatmigkeit",
@@ -347,7 +351,8 @@ var symptomid2german = {
     "sorethroat": "Halsschmerzen",
     "nausea": "Übelkeit",
     "diarrhea": "Durchfall",
-    "rhinorrhea": "Schnupfen"
+    "rhinorrhea": "Schnupfen",
+    "test": "Virustest"
 }
 
 
@@ -373,6 +378,9 @@ function init() {
                     <hr>
                     <label class="symptom"><input type="checkbox" id="test" class="filter leaflet-control-layers-overlays"  checked="checked">
                         positiv getestet
+                    </label>
+                    <label class="symptom"><input type="checkbox" id="fever" class="filter leaflet-control-layers-overlays"  checked="checked">
+                        Fieber
                     </label>
                     <label class="symptom"><input type="checkbox" id="headache" class="filter leaflet-control-layers-overlays"  checked="checked">
                         Kopfschmerzen
@@ -412,10 +420,10 @@ function init() {
         div.innerHTML = `
             <div class="leaflet-control-layers leaflet-control-layers-expanded">
                 <form onchange="on_display_options_change()" id="display_options">
-                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise">
-                    Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="bundeslaender" name="display_options" value="Bundesländer">
                     Bundesländer</input><br>
+                    <input type="radio" class="leaflet-control-layers-overlays" id="landkreise" name="display_options" value="Landkreise">
+                    Landkreise</input><br>
                     <input type="radio" class="leaflet-control-layers-overlays" id="gemeinden" name="display_options" value="Gemeinden">
                     Gemeinden</input><br>
 
@@ -428,13 +436,14 @@ function init() {
     };
 
     display_options.addTo(map)
-    if (plz == '00000'){
+    //if (plz == '00000'){
 	    var display_option = document.querySelector('input[id="landkreise"]').checked = true;
+    /*
     }
     else {
 	    var display_option = document.querySelector('input[id="gemeinden"]').checked = true;
     }
-
+    */
     var legend = L.control({position: 'bottomright'});
 
     legend.onAdd = function (map) {

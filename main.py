@@ -77,6 +77,7 @@ def createreportdict(form):
     dct["sex"] = form.sex.data
     dct["plz"] = form.plz.data
 
+    dct["fever"] = form.fever.data
     dct["headache"] = form.headache.data
     dct["cough"] = form.cough.data
     dct["shortnessbreath"] = form.shortnessbreath.data
@@ -116,29 +117,14 @@ def landkreis(name):
     return render_template('landkreis.html', name=name)
 
 @app.route('/report')
-def rereport():
-    return map(rereport=True)
-
-@app.route('/<plz>', methods=['GET', 'POST'])
-@app.route('/', methods=['GET', 'POST'])
-def map(plz = '00000', rereport=False):
+def report():
     username = request.cookies.get('username')
     if username:
-        form = QuizForm(request.form, dayssymptoms=0, notherstest=0, username=username)
+        form = QuizForm(request.form, dayssymptoms=0, notherstest=0, username=username, meta={'locales': ['de_DE', 'de']})
     else:
-        form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
-
-    signature = request.cookies.get('signature')
-
-    if signature and not rereport:
-        resp = make_response(render_template('map.html', form=form, show_report=False, mandatory_done=False, plz=plz))
-
-        #DEBUG - remove the cookie to show report
-        # resp.set_cookie('signature', '', expires=0)
-
-        return resp
-
-    elif form.validate_on_submit():
+        form = QuizForm(request.form, dayssymptoms=0, notherstest=0, meta={'locales': ['de_DE', 'de']})
+    
+    if form.validate_on_submit():
         dct = createreportdict(form)
 
         report_ref.document(dct["token"]).set(dct)
@@ -149,17 +135,27 @@ def map(plz = '00000', rereport=False):
             if oldreport["token"] != dct["token"]:
                 oldreport["overwritten"] = True
                 report_ref.document(oldreport["token"]).set(oldreport)
-
-        # return render_template('confirm_mail.html', mail=dct["email_addr"])
-
-        template = render_template('map.html', form=form, show_report=True, mandatory_done=True, plz=plz)
+                
+        template = render_template('map.html', form=form, show_report=False, mandatory_done=True, plz="00000")
         response = make_response(template)
         response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
         response.set_cookie('username', dct["username"], max_age=60 * 60 * 24 * 365 * 2)
         return response
 
     else:
-        return render_template('map.html', form=form, show_report=True, mandatory_done=False, plz=plz)
+        return render_template('map.html', form=form, show_report=True, mandatory_done=False, plz="00000")
+
+@app.route('/<plz>', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+def map(plz = '00000'):
+    signature = request.cookies.get('signature')
+
+    if signature:
+        resp = make_response(render_template('map.html', form=None, show_report=False, mandatory_done=False, plz=plz))
+        return resp
+
+    else:
+        return report()
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -207,6 +203,7 @@ def getreports():
         "longitude": report["longitude_rand"],
         "test": report["test"],
         "date": report["timestamp"].strftime("%d.%m.%Y"),
+        "fever": "" if "fever" not in report else report["fever"],
         "headache": 0 if "headache" not in report else report["headache"],
         "cough": 0 if "cough" not in report else report["cough"],
         "shortnessbreath": 0 if "shortnessbreath" not in report else report["shortnessbreath"],
