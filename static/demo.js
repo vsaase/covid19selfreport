@@ -96,7 +96,7 @@ function makeMap() {
     map = L.map('map').setView(BASECOORDS, 6);
     map.on('locationfound', onLocationFound);
     //map.on('locationerror', onLocationError);
-    //add_title_layer()
+    add_title_layer()
 }
 
 var reportlayer = L.layerGroup();
@@ -317,7 +317,7 @@ function on_display_options_change() {
     map.eachLayer(function (layer) {
         map.removeLayer(layer);
     });
-    //add_title_layer()
+    add_title_layer()
     renderData()
 }
 

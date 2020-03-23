@@ -12,7 +12,7 @@ def validate_plz(form, field):
         raise ValidationError("Bitte geben Sie eine gültige Postleitzahl an")
 
 def validate_fever(form, field):
-    cleaned = field.data.replace(",", ".").replace('°','').replace("Grad","").strip()
+    cleaned = field.data.replace(",", ".").replace('°','').replace('C','').replace("Grad","").strip()
     try:
         fever = float(cleaned)
         field.data = str(float(cleaned))
