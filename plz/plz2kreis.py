@@ -14,7 +14,7 @@ f.close()
 
 def plz2longlat(plz):
     df = pd.read_csv("plz/PLZ.tab", sep="\t", dtype=str, skiprows=0)
-    lon, lat = df.loc[df.plz == "55442",["lon","lat"]].iloc[0,:]
+    lon, lat = df.loc[df.plz == plz,["lon","lat"]].iloc[0,:]
     return float(lon), float(lat)
 
 def plz_exists(plz):
