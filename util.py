@@ -3,7 +3,7 @@ from datetime import datetime
 from google.api_core.datetime_helpers import DatetimeWithNanoseconds
 
 
-def covertFirebaseTimeToPythonTime(timestamp):
+def convertFirebaseTimeToPythonTime(timestamp):
     timestamp = timestamp.rfc3339()
     try:
         print("orig")

@@ -14,7 +14,7 @@ from firebase_admin import credentials, firestore
 from itsdangerous import URLSafeTimedSerializer, Signer
 from plz.plz2kreis import plz2kreis, plz2longlat
 
-from util import covertFirebaseTimeToPythonTime
+from util import convertFirebaseTimeToPythonTime
 
 testing_mode = True
 
@@ -115,15 +115,22 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html', name=name)
 
+@app.route('/report')
+def rereport():
+    return map(rereport=True)
 
 @app.route('/<plz>', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
-def map(plz = '00000'):
-    form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
+def map(plz = '00000', rereport=False):
+    username = request.cookies.get('username')
+    if username:
+        form = QuizForm(request.form, dayssymptoms=0, notherstest=0, username=username)
+    else:
+        form = QuizForm(request.form, dayssymptoms=0, notherstest=0)
 
     signature = request.cookies.get('signature')
 
-    if signature:
+    if signature and not rereport:
         resp = make_response(render_template('map.html', form=form, show_report=False, mandatory_done=False, plz=plz))
 
         #DEBUG - remove the cookie to show report
@@ -132,7 +139,6 @@ def map(plz = '00000'):
         return resp
 
     elif form.validate_on_submit():
-
         dct = createreportdict(form)
 
         report_ref.document(dct["token"]).set(dct)
@@ -149,6 +155,7 @@ def map(plz = '00000'):
         template = render_template('map.html', form=form, show_report=True, mandatory_done=True, plz=plz)
         response = make_response(template)
         response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
+        response.set_cookie('username', dct["username"], max_age=60 * 60 * 24 * 365 * 2)
         return response
 
     else:

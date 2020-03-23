@@ -1,5 +1,8 @@
 BASECOORDS = [51.3150172,9.3205287];
 
+var MB_ATTR = 'Ein Forschungsprojekt der Medizinischen Fakultät Mannheim der Universität Heidelberg. <a href="/info">Informationen zum Projekt und Spendenaufruf</a>, <a href="/impressum">Impressum</a>,  <a href="/delete">Daten löschen</a>, Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+
+
 var blueIcon = new L.Icon({
 	iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
 	shadowUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
@@ -84,7 +87,6 @@ var blackIcon = new L.Icon({
 
 function add_title_layer() {
     var TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    var MB_ATTR = 'Ein Forschungsprojekt der Medizinischen Fakultät Mannheim der Universität Heidelberg. <a href="/info">Informationen zum Projekt und Spendenaufruf</a>, <a href="/impressum">Impressum</a>,  <a href="/delete">Daten löschen</a>, Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
     L.tileLayer(TILE_URL, {attribution: MB_ATTR}).addTo(map);
 }
 
@@ -94,7 +96,7 @@ function makeMap() {
     map = L.map('map').setView(BASECOORDS, 6);
     map.on('locationfound', onLocationFound);
     //map.on('locationerror', onLocationError);
-    add_title_layer()
+    //add_title_layer()
 }
 
 var reportlayer = L.layerGroup();
@@ -150,7 +152,15 @@ function report_overlay(filter_reports = false) {
                     icon = orangeIcon;
                 }
                 let marker = L.marker([arr["latitude"], arr["longitude"]], {icon: icon})
-                marker.bindPopup('<p>'+arr["date"]+'<br/>Virustest: ' + arr["test"] + '</p>')
+
+                popuptext = '<p>'+arr["date"]+'<br/>'
+                for (id of Object.keys(symptomid2german)) {
+                    if (arr[id] > 0 ) {
+                        popuptext += symptomid2german[id] + '<br/>' 
+                    }
+                }
+                popuptext += 'Virustest: ' + arr["test"] + '</p>'
+                marker.bindPopup(popuptext)
                 return marker;
             }
         });
@@ -304,7 +314,7 @@ function on_display_options_change() {
     map.eachLayer(function (layer) {
         map.removeLayer(layer);
     });
-    add_title_layer()
+    //add_title_layer()
     renderData()
 }
 
@@ -329,16 +339,26 @@ function filter() {
     }
 }
 
+var symptomid2german = {
+    "headache": "Kopfschmerzen",
+    "cough": "Husten",
+    "shortnessbreath": "Kurzatmigkeit",
+    "musclepain": "Muskelschmerzen",
+    "sorethroat": "Halsschmerzen",
+    "nausea": "Übelkeit",
+    "diarrhea": "Durchfall",
+    "rhinorrhea": "Schnupfen"
+}
+
 
 function init() {
     makeMap();
     map.locate({setView: true, maxZoom: 13});
-
+    var attribution = L.control.attribution().setPrefix('').addTo(map);
+    attribution.addAttribution(MB_ATTR);
     var filter_dropdown = L.control({position:'topright'});
 
     filter_dropdown.onAdd = function (map) {
-
-
 
         var div = L.DomUtil.create('div');
             div.innerHTML = `

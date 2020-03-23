@@ -15,7 +15,9 @@ function success(pos) {
 	console.log(`More or less ${crd.accuracy} meters.`);
 	console.log(crd)
 	console.log(JSON.stringify({latitude: crd.latitude, longitude: crd.longitude, accuracy: crd.accuracy}))
-	document.getElementById("geolocation").value = JSON.stringify({"latitude": crd.latitude, "longitude": crd.longitude, "accuracy": crd.accuracy})
+	if(document.getElementById("geolocation")){
+		document.getElementById("geolocation").value = JSON.stringify({"latitude": crd.latitude, "longitude": crd.longitude, "accuracy": crd.accuracy})
+	} 
 }
 
 function error(err) {
