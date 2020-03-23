@@ -90,14 +90,13 @@ def createreportdict(form):
     dct["travelhistory"] = form.travelhistory.data
     dct["contacthistory"] = form.contacthistory.data
     dct["notherstest"] = form.notherstest.data
-    # dct["dayssymptoms"] = form.dayssymptoms.data
+    
     dct["arzt"] = form.arzt.data
     dct["test"] = form.test.data
     dct["datetest"] = None if form.datetest.data is None else form.datetest.data.strftime("%d.%m.%Y")
     dct["quarantine"] = form.quarantine.data
     dct["datequarantine"] = None if form.datetest.data is None else form.datequarantine.data.strftime("%d.%m.%Y")
 
-    # dct["notherssymptoms"] = form.notherssymptoms.data
     try:
         dct["kreis"] = plz2kreis[dct["plz"]]
     except:
@@ -116,7 +115,7 @@ def createreportdict(form):
 def landkreis(name):
     return render_template('landkreis.html', name=name)
 
-@app.route('/report')
+@app.route('/report', methods=['GET', 'POST'])
 def report():
     username = request.cookies.get('username')
     if username:
@@ -126,7 +125,6 @@ def report():
     
     if form.validate_on_submit():
         dct = createreportdict(form)
-
         report_ref.document(dct["token"]).set(dct)
 
         oldreports = report_ref.where("signature", '==', dct["signature"]).stream()
@@ -136,10 +134,10 @@ def report():
                 oldreport["overwritten"] = True
                 report_ref.document(oldreport["token"]).set(oldreport)
                 
-        template = render_template('map.html', form=form, show_report=False, mandatory_done=True, plz="00000")
+        template = redirect("/")
         response = make_response(template)
-        response.set_cookie('signature', dct["signature"], max_age=60 * 60 * 24 * 365 * 2)
-        response.set_cookie('username', dct["username"], max_age=60 * 60 * 24 * 365 * 2)
+        response.set_cookie('signature', dct["signature"], max_age = 60*60*24*365*2)
+        response.set_cookie('username', dct["username"], max_age = 60*60*24*365*2)
         return response
 
     else:
@@ -155,7 +153,7 @@ def map(plz = '00000'):
         return resp
 
     else:
-        return report()
+        return redirect("/report")
 
 
 @app.route('/delete', methods=['GET', 'POST'])

@@ -56,7 +56,7 @@ class QuizForm(Form):
     sorethroat = IntegerField('Wie stark leiden Sie aktuell unter Halsschmerzen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
     nausea = IntegerField('Wie stark leiden Sie aktuell unter Übelkeit/Erbrechen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
     diarrhea = IntegerField('Wie stark leiden Sie aktuell unter Durchfall? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
-    rhinorrhea = IntegerField('Wie stark leiden Sie aktuell unter verstopfter Nase? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
+    rhinorrhea = IntegerField('Wie stark leiden Sie aktuell unter Schnupfen? (0 = keine Beschwerden, 10 = extrem stark)', default=0, widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=10, message="Bitte geben Sie eine Zahl zwischen 0 und 10 ein.")])
     
     #dayssymptoms = IntegerField('Falls zutreffend, seit wievielen Tagen haben Sie Symptome?', widget=NumberInput(), validators=[Optional(), NumberRange(min=0, max=None, message="Bitte Zahl mit Nummern eingeben")])
     arzt = SelectField('Waren Sie bereits wegen den Symptomen bei einer Ärztin / einem Arzt?', 
