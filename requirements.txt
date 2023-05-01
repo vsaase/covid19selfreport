@@ -1,4 +1,4 @@
-Flask==1.1.1
+Flask==2.3.2
 flask_sqlalchemy
 flask_bootstrap
 flask_wtf
